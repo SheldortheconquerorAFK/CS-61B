@@ -1,3 +1,5 @@
+import com.sun.security.auth.UnixNumericGroupPrincipal;
+
 import java.util.Formatter;
 
 /**
@@ -81,8 +83,12 @@ public class IntList {
      */
 
     public static IntList dcatenate(IntList A, IntList B) {
-        //TODO:  fill in method
-        return null;
+        IntList lst=A;
+        while (A.rest!=null){
+            A=A.rest;
+        }
+        A.rest=B;
+        return lst;
     }
 
     /**
@@ -90,11 +96,32 @@ public class IntList {
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        //TODO:  fill in method
-        return null;
+        IntList lst=new IntList(A.first,null);
+        IntList helper=lst;
+        while (A.rest!=null){
+            A=A.rest;
+            helper.rest=new IntList(A.first,null);
+            helper=helper.rest;
+        }
+        helper.rest=B;
+        return lst;
     }
 
+    private IntNode lastNode;
+    SLList (int x){
+        sentinel.next=lastNode;
+    }
+    SLList (){
+        sentinel.next=new IntNode(0,null);
+        lastNode=sentinel.next;
+    }
+    addLast(int x){
+        lastNode.next=new IntNode(x,null);
+        size+=1;
+    }
+    addFirst(int x){
 
+    }
 
 
 
