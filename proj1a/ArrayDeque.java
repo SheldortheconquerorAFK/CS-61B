@@ -47,6 +47,10 @@ public class ArrayDeque<T> {
         return size == 0;
     }
 
+    public int size() {
+        return size;
+    }
+
     public void printDeque() {
         for (int i = nextFirst + 1; i < nextLast; i++) {
             if (i == items.length - 1) {
