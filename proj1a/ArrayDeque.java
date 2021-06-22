@@ -112,11 +112,10 @@ public class ArrayDeque<T> {
             return null;
         } else {
             if (nextFirst + index >= items.length - 1) {
-                return items[index - (items.length - 1 - nextFirst) - 1];    // e.g. if the items spans from pos 5 to pos 1 (i.e 5,6,7,0,1), and you pick index 3, then the pos should be 0.
+                return items[index - (items.length - 1 - nextFirst) - 1];
             } else {
                 return items[nextFirst + index + 1];
             }
         }
     }
-
 }

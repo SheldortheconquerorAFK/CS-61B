@@ -1,8 +1,9 @@
 public class LinkedListDeque<T> {
+
     private class Node {
-        public Node prev;
-        public T item;
-        public Node next;
+        private Node prev;
+        private T item;
+        private Node next;
 
         public Node(Node a, T i, Node b) {
             prev = a;
@@ -54,13 +55,13 @@ public class LinkedListDeque<T> {
     }
 
     public T removeFirst() {
-        if (size == 0){
+        if (size == 0) {
             return null;
         } else {
             Node first = sentinel.next;
             T value = first.item;
-            sentinel.next = sentinel.next.next;   /* point to the second node(size > 1) or sentinel(size = 1) */
-            if (size == 1) {                       /* really have no idea about how to do that without a special case */
+            sentinel.next = sentinel.next.next;
+            if (size == 1) {
                 sentinel.prev = sentinel;
             }
             sentinel.next.prev = sentinel;        /* modify the prev of second node */
@@ -79,7 +80,7 @@ public class LinkedListDeque<T> {
             Node last = sentinel.prev;
             T value = last.item;
             sentinel.prev = sentinel.prev.prev;
-            if (size == 1) {                       /* really have no idea about how to do that without a special case */
+            if (size == 1) {
                 sentinel.next = sentinel;
             }
             sentinel.prev.next = sentinel;
