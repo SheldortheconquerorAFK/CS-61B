@@ -4,6 +4,8 @@ public class ArrayDeque<T> {
     private T[] items;
     private int nextFirst;
     private int nextLast;
+    private int firstAdded = 0;
+    private int lastAdded = 0;
 
     public ArrayDeque() {
         size = 0;
@@ -26,6 +28,8 @@ public class ArrayDeque<T> {
             nextFirst -= 1;
         }
         size += 1;
+        firstAdded += 1;
+
     }
 
     public void addLast(T item) {
@@ -37,6 +41,7 @@ public class ArrayDeque<T> {
             nextLast += 1;
         }
         size += 1;
+        lastAdded += 1;
     }
 
     /**
@@ -68,42 +73,42 @@ public class ArrayDeque<T> {
      * @return the value of the front, or zeroth item, then nullify it from the array.
      */
     public T removeFirst() {
-        if (size == 0) {
+        if (size == 0 || firstAdded == 0) {
             return null;
         } else {
+            T value;
             if (nextFirst == items.length - 1) {
-                T value = items[0];
+                value = items[0];
                 items[0] = null;
                 nextFirst = 0;
-                size -= 1;
-                return value;
             } else {
-                T value = items[nextFirst + 1];
+                value = items[nextFirst + 1];
                 items[nextFirst + 1] = null;
                 nextFirst += 1;
-                size -= 1;
-                return value;
             }
+            firstAdded -= 1;
+            size -= 1;
+            return value;
         }
     }
 
     public T removeLast() {
-        if (size == 0) {
+        if (size == 0 || lastAdded == 0) {
             return null;
         } else {
+            T value;
             if (nextLast == 0) {
-                T value = items[items.length - 1];
+                value = items[items.length - 1];
                 items[items.length - 1] = null;
                 nextLast = items.length - 1;
-                size -= 1;
-                return value;
             } else {
-                T value = items[nextLast - 1];
+                value = items[nextLast - 1];
                 items[nextLast - 1] = null;
                 nextLast = nextLast - 1;
-                size -= 1;
-                return value;
             }
+            lastAdded -= 1;
+            size -= 1;
+            return value;
         }
     }
 
@@ -111,8 +116,8 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         } else {
-            if (nextFirst + index >= items.length - 1) {
-                return items[index - (items.length - 1 - nextFirst) - 1];
+            if (nextFirst + 1 + index > items.length - 1) {
+                return items[index - (items.length - 1 - nextFirst)];
             } else {
                 return items[nextFirst + index + 1];
             }
