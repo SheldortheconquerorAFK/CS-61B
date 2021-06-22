@@ -65,7 +65,6 @@ public class ArrayDeque<T> {
 
     /**
      * Remove the front, or the zeroth item in the underlying array, then return it.
-     * The specific process depends on the specific list. Even if the user uses the addFirst method multiple times so that the nextFirst pointer move back to the front of the array, we still use the pos next to nextFirst as the beginning pos.
      * @return the value of the front, or zeroth item, then nullify it from the array.
      */
     public T removeFirst() {
@@ -109,15 +108,15 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-       if (size == 0) {
-           return null;
-       } else {
-           if (nextFirst + index >= items.length - 1) {
-               return items[index - (items.length - 1 - nextFirst) - 1];    // e.g. if the items spans from pos 5 to pos 1 (i.e 5,6,7,0,1), and you pick index 3, then the pos should be 0.
-           } else {
-               return items[nextFirst + index + 1];
-           }
-       }
+        if (size == 0) {
+            return null;
+        } else {
+            if (nextFirst + index >= items.length - 1) {
+                return items[index - (items.length - 1 - nextFirst) - 1];    // e.g. if the items spans from pos 5 to pos 1 (i.e 5,6,7,0,1), and you pick index 3, then the pos should be 0.
+            } else {
+                return items[nextFirst + index + 1];
+            }
+        }
     }
 
 }
