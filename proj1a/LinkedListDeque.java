@@ -37,11 +37,7 @@ public class LinkedListDeque<T> {
     }
 
     public boolean isEmpty(){
-        if (size==0){
-            return true;
-        } else{
-            return false;
-        }
+        return size == 0;
     }
 
     public int size(){
@@ -54,6 +50,7 @@ public class LinkedListDeque<T> {
             System.out.println(p.item+" ");
             p=p.next;
         }
+        System.out.println("\n");
     }
 
     public T removeFirst(){
@@ -62,7 +59,7 @@ public class LinkedListDeque<T> {
         } else{
             Node first=sentinel.next;
             T value=first.item;
-            sentinel.next=sentinel.next.next;   /* point to the second node(size>1) or sentinel(size=1) */
+            sentinel.next=sentinel.next.next;   /* point to the second node(size > 1) or sentinel(size = 1) */
             if (size==1){                       /* really have no idea about how to do that without a special case */
                 sentinel.prev=sentinel;
             }
