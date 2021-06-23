@@ -4,7 +4,7 @@ public class ArrayDeque<T> {
     private T[] items;
     private int nextFirst;
     private int nextLast;
-    private int firstAdded = 0;
+    private int frontAdded = 0;
     private int lastAdded = 0;
 
     public ArrayDeque() {
@@ -28,7 +28,7 @@ public class ArrayDeque<T> {
             nextFirst -= 1;
         }
         size += 1;
-        firstAdded += 1;
+        frontAdded += 1;
 
     }
 
@@ -73,10 +73,20 @@ public class ArrayDeque<T> {
      * @return the value of the front, or zeroth item, then nullify it from the array.
      */
     public T removeFirst() {
-        if (size == 0 || firstAdded == 0) {
+        T value;
+        if (size == 0) {
             return null;
+        } else if (frontAdded == 0) {
+            if (nextLast - lastAdded > 0) {
+                value = items[nextLast -lastAdded];
+                items[nextLast -lastAdded] = null;
+                return value;
+            } else {
+                value = items[nextLast + items.length - lastAdded];
+                items[nextLast + items.length - lastAdded] = null;
+                return value;
+            }
         } else {
-            T value;
             if (nextFirst == items.length - 1) {
                 value = items[0];
                 items[0] = null;
@@ -86,17 +96,27 @@ public class ArrayDeque<T> {
                 items[nextFirst + 1] = null;
                 nextFirst += 1;
             }
-            firstAdded -= 1;
+            frontAdded -= 1;
             size -= 1;
             return value;
         }
     }
 
     public T removeLast() {
-        if (size == 0 || lastAdded == 0) {
+        T value;
+        if (size == 0) {
             return null;
+        } else if (frontAdded == 0) {
+            if (nextFirst + frontAdded >= items.length) {
+                value = items[nextFirst +frontAdded -items.length];
+                items[nextFirst +frontAdded -items.length] = null;
+                return value;
+            } else {
+                value = items[nextFirst + frontAdded];
+                items[nextFirst + frontAdded] = null;
+                return value;
+            }
         } else {
-            T value;
             if (nextLast == 0) {
                 value = items[items.length - 1];
                 items[items.length - 1] = null;
