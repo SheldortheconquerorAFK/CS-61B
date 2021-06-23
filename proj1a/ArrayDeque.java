@@ -4,18 +4,21 @@ public class ArrayDeque<T> {
     private T[] items;
     private int nextFirst;
     private int nextLast;
-    private int firstAdded = 0;
-    private int lastAdded = 0;
+    private int frontAdd;
+    private int lastAdd;
+
 
     public ArrayDeque() {
         size = 0;
         items = (T[]) new Object[8];
         nextFirst = 0;
         nextLast = 1;
+        frontAdd = 0;
+        lastAdd = 0;
     }
 
     /**
-     * Add one item to the front, or the zeroth position of the underlying array.
+     * Add one item to the front, or the zeroth position of the array-based list(the list, not the array).
      * Using circular sentinel node abstraction.
      * @param item The single item which is going to be added to the underlying array.
      */
@@ -27,8 +30,9 @@ public class ArrayDeque<T> {
             items[nextFirst] = item;
             nextFirst -= 1;
         }
+        frontAdd += 1;
         size += 1;
-        firstAdded += 1;
+
 
     }
 
@@ -40,8 +44,8 @@ public class ArrayDeque<T> {
             items[nextLast] = item;
             nextLast += 1;
         }
+        lastAdd += 1;
         size += 1;
-        lastAdded += 1;
     }
 
     /**
@@ -57,7 +61,7 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for (int i = nextFirst + 1; i < nextLast; i++) {
+        for (int i = calcFrontInd() + 1; i < calcLastInd(); i++) {
             if (i == items.length - 1) {
                 System.out.println(items[i] + " ");
                 i = -1;
@@ -73,53 +77,72 @@ public class ArrayDeque<T> {
      * @return the value of the front, or zeroth item, then nullify it from the array.
      */
     public T removeFirst() {
-        if (size == 0 || firstAdded == 0) {
+        if (size == 0) {
             return null;
         } else {
-            T value;
-            if (nextFirst == items.length - 1) {
-                value = items[0];
-                items[0] = null;
-                nextFirst = 0;
-            } else {
-                value = items[nextFirst + 1];
-                items[nextFirst + 1] = null;
-                nextFirst += 1;
-            }
-            firstAdded -= 1;
+            T value = items[calcFrontInd()];
+            frontAdd -= 1;
             size -= 1;
+            items[calcFrontInd()] = null;
             return value;
         }
     }
 
     public T removeLast() {
-        if (size == 0 || lastAdded == 0) {
+        if (size == 0) {
             return null;
         } else {
-            T value;
-            if (nextLast == 0) {
-                value = items[items.length - 1];
-                items[items.length - 1] = null;
-                nextLast = items.length - 1;
-            } else {
-                value = items[nextLast - 1];
-                items[nextLast - 1] = null;
-                nextLast = nextLast - 1;
-            }
-            lastAdded -= 1;
+            T value = items[calcLastInd()];
+            lastAdd -= 1;
             size -= 1;
+            items[calcLastInd()] = null;
             return value;
         }
     }
 
     public T get(int index) {
-        if (size == 0) {
-            return null;
+        if (calcFrontInd() + 1 + index > items.length - 1) {            // if the list spans over end of the array and turns around to front of the array.
+            return items[index - (items.length - calcFrontInd())];
         } else {
-            if (nextFirst + 1 + index > items.length - 1) {
-                return items[index - (items.length - 1 - nextFirst)];
+            return items[calcFrontInd() + index];
+        }
+
+    }
+
+    /**
+     * The function is used to calculate the index of zeroth element of the list.
+     * The case is, if the user only uses addLast to add elements, they still get a list which has a front.
+     * So it is important to distinguish what exactly is the zeroth item in the list, in various cases.
+     * @return the index of the zeroth element of the list
+     */
+    public int calcFrontInd() {
+        if (frontAdd > 0) {
+            if (nextFirst == items.length) {
+                return 0;
             } else {
-                return items[nextFirst + index + 1];
+                return nextFirst + 1;
+            }
+        } else {
+            if (nextLast - lastAdd > 0) {
+                return nextLast -lastAdd;
+            } else {
+                return nextLast + items.length - lastAdd;
+            }
+        }
+    }
+
+    public int calcLastInd() {
+        if (lastAdd > 0) {
+            if (nextLast == 0) {
+                return items.length;
+            } else {
+                return nextLast - 1;
+            }
+        } else {
+            if (nextFirst + frontAdd >= items.length) {
+                return nextFirst +frontAdd -items.length;
+            } else {
+                return nextFirst + frontAdd;
             }
         }
     }

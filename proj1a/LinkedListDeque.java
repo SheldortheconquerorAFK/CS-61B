@@ -1,5 +1,4 @@
 public class LinkedListDeque<T> {
-
     private class Node {
         private Node prev;
         private T item;
@@ -119,4 +118,6 @@ public class LinkedListDeque<T> {
             return helper.getRecursive(index - 1);
         }
     }
+
 }
+
