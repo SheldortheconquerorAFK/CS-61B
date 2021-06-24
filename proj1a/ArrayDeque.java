@@ -65,19 +65,20 @@ public class ArrayDeque<T> {
         if (size() == 0) {
             return null;
         }
-        T value = items[frontInd()];
+        T value = items[frontInd()];    // take the item of zeroth index
         items[frontInd()] = null;
         frontAdded -= 1;
         return value;
     }
 
     private int frontInd() {
+        frontAdded -= 1;
         if (frontAdded > 0) {
-           if (nextFirst == items.length) {
-               return 0;
-           } else {
-               return nextFirst + 1;
-           }
+            if (nextFirst == items.length) {
+                return 0;
+            } else {
+                return nextFirst + 1;
+            }
         } else {
             if (nextLast <= 1) {
                 return items.length - size();
@@ -88,10 +89,11 @@ public class ArrayDeque<T> {
     }
 
     public T removeLast() {
+        lastAdded -= 1;
         if (size() == 0) {
             return null;
         } else {
-            T value = items[lastInd()];
+            T value = items[lastInd()];     // take the item of the last index
             items[lastInd()] = null;
             lastAdded -= 1;
             return value;
@@ -110,6 +112,11 @@ public class ArrayDeque<T> {
         }
     }
 
+    /**
+     * Take the zeroth item from the list(using frontInd function), then add index onto it.
+     * @param index the index of the list(not the underlying array)
+     * @return value of the item on slot of the given index
+     */
     public T get(int index) {
         if (frontInd() + index >= items.length) {
             return items[frontInd() + index - items.length];
