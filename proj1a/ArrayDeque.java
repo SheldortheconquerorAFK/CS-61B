@@ -4,21 +4,19 @@ public class ArrayDeque<T> {
     private T[] items;
     private int nextFirst;
     private int nextLast;
-    private int frontAdded = 0;
-    private int lastAdded = 0;
+    private int frontAdded;
+    private int lastAdded;
+
 
     public ArrayDeque() {
         size = 0;
         items = (T[]) new Object[8];
         nextFirst = 0;
         nextLast = 1;
+        frontAdded = 0;
+        lastAdded = 0;
     }
 
-    /**
-     * Add one item to the front, or the zeroth position of the underlying array.
-     * Using circular sentinel node abstraction.
-     * @param item The single item which is going to be added to the underlying array.
-     */
     public void addFirst(T item) {
         if (nextFirst == 0) {
             items[nextFirst] = item;
@@ -29,7 +27,6 @@ public class ArrayDeque<T> {
         }
         size += 1;
         frontAdded += 1;
-
     }
 
     public void addLast(T item) {
@@ -44,10 +41,6 @@ public class ArrayDeque<T> {
         lastAdded += 1;
     }
 
-    /**
-     * Check if the array-based list is empty(i.e. including 0 element).
-     * @return true if size = 0, otherwise return false.
-     */
     public boolean isEmpty() {
         return size == 0;
     }
@@ -68,79 +61,61 @@ public class ArrayDeque<T> {
         System.out.println("\n");
     }
 
-    /**
-     * Remove the front, or the zeroth item in the underlying array, then return it.
-     * @return the value of the front, or zeroth item, then nullify it from the array.
-     */
     public T removeFirst() {
-        T value;
-        if (size == 0) {
+        if (size() == 0) {
             return null;
-        } else if (frontAdded == 0) {
-            if (nextLast - lastAdded > 0) {
-                value = items[nextLast -lastAdded];
-                items[nextLast -lastAdded] = null;
-                return value;
-            } else {
-                value = items[nextLast + items.length - lastAdded];
-                items[nextLast + items.length - lastAdded] = null;
-                return value;
-            }
+        }
+        T value = items[frontInd()];
+        items[frontInd()] = null;
+        frontAdded -= 1;
+        return value;
+    }
+
+    private int frontInd() {
+        if (frontAdded > 0) {
+           if (nextFirst == items.length) {
+               return 0;
+           } else {
+               return nextFirst + 1;
+           }
         } else {
-            if (nextFirst == items.length - 1) {
-                value = items[0];
-                items[0] = null;
-                nextFirst = 0;
+            if (nextLast <= 1) {
+                return items.length - size();
             } else {
-                value = items[nextFirst + 1];
-                items[nextFirst + 1] = null;
-                nextFirst += 1;
+                return nextLast - size();
             }
-            frontAdded -= 1;
-            size -= 1;
-            return value;
         }
     }
 
     public T removeLast() {
-        T value;
-        if (size == 0) {
+        if (size() == 0) {
             return null;
-        } else if (frontAdded == 0) {
-            if (nextFirst + frontAdded >= items.length) {
-                value = items[nextFirst +frontAdded -items.length];
-                items[nextFirst +frontAdded -items.length] = null;
-                return value;
-            } else {
-                value = items[nextFirst + frontAdded];
-                items[nextFirst + frontAdded] = null;
-                return value;
-            }
         } else {
-            if (nextLast == 0) {
-                value = items[items.length - 1];
-                items[items.length - 1] = null;
-                nextLast = items.length - 1;
-            } else {
-                value = items[nextLast - 1];
-                items[nextLast - 1] = null;
-                nextLast = nextLast - 1;
-            }
+            T value = items[lastInd()];
+            items[lastInd()] = null;
             lastAdded -= 1;
-            size -= 1;
             return value;
         }
     }
 
-    public T get(int index) {
-        if (size == 0) {
-            return null;
-        } else {
-            if (nextFirst + 1 + index > items.length - 1) {
-                return items[index - (items.length - 1 - nextFirst)];
+    private int lastInd() {
+        if (lastAdded > 0) {
+            if (nextLast == 0) {
+                return items.length;
             } else {
-                return items[nextFirst + index + 1];
+                return nextLast - 1;
             }
+        } else {
+            return nextFirst + size();
         }
     }
+
+    public T get(int index) {
+        if (frontInd() + index >= items.length) {
+            return items[frontInd() + index - items.length];
+        } else {
+            return items[frontInd() + index];
+        }
+    }
+
 }
