@@ -6,6 +6,7 @@ public class ArrayDeque<T> {
     private int nextLast;
     private int frontAdded;
     private int lastAdded;
+    private int lastpointer;
 
 
     public ArrayDeque() {
@@ -15,6 +16,7 @@ public class ArrayDeque<T> {
         nextLast = 1;
         frontAdded = 0;
         lastAdded = 0;
+
     }
 
     public void addFirst(T item) {
@@ -67,12 +69,22 @@ public class ArrayDeque<T> {
         }
         T value = items[frontInd()];    // take the item of zeroth index
         items[frontInd()] = null;
-        frontAdded -= 1;
+        if (frontAdded == 0) {
+            lastAdded -= 1;
+
+        } else {
+            frontAdded -= 1;
+            if (nextFirst == items.length) {
+                nextFirst = 0;
+            } else {
+                nextFirst = nextFirst + 1;
+            }
+        }
+        size -= 1;
         return value;
     }
 
     private int frontInd() {
-        frontAdded -= 1;
         if (frontAdded > 0) {
             if (nextFirst == items.length) {
                 return 0;
@@ -81,7 +93,7 @@ public class ArrayDeque<T> {
             }
         } else {
             if (nextLast <= 1) {
-                return items.length - size();
+                return items.length - (size() - nextLast);
             } else {
                 return nextLast - size();
             }
@@ -89,26 +101,39 @@ public class ArrayDeque<T> {
     }
 
     public T removeLast() {
-        lastAdded -= 1;
         if (size() == 0) {
             return null;
-        } else {
-            T value = items[lastInd()];     // take the item of the last index
-            items[lastInd()] = null;
-            lastAdded -= 1;
-            return value;
         }
+        T value = items[lastInd()];     // take the item of the last index
+        items[lastInd()] = null;
+        if (lastAdded == 0) {
+            frontAdded -= 1;
+
+        } else{
+            lastAdded -= 1;
+            if (nextLast == 0){
+                nextLast = items.length - 1;
+            } else {
+                nextLast = nextLast - 1;
+            }
+        }
+        size -= 1;
+        return value;
     }
 
     private int lastInd() {
         if (lastAdded > 0) {
             if (nextLast == 0) {
-                return items.length;
+                return items.length - 1;
             } else {
                 return nextLast - 1;
             }
         } else {
-            return nextFirst + size();
+            if (size() == 1 || size() == items.length) {
+                return 0;
+            } else {
+                return frontAdded;
+            }
         }
     }
 
