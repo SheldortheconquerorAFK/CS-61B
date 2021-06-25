@@ -77,6 +77,9 @@ public class ArrayDeque<T> {
         items[addOne(nextFirst)] = null;
         nextFirst = addOne(nextFirst);
         size -= 1;
+        if (items.length >= 16 && size < (items.length / 4)) {
+            resize(items.length / 2);
+        }
         return value;
 
 
@@ -90,6 +93,9 @@ public class ArrayDeque<T> {
         items[addOne(nextFirst)] = null;
         nextLast = minusOne(nextLast);
         size -= 1;
+        if (items.length >= 16 && size < (items.length / 4)) {
+            resize(items.length / 2);
+        }
         return value;
     }
 
