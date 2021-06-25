@@ -15,23 +15,23 @@ public class ArrayDeque<T> {
 
     }
 
-    public int addOne(int index) {
+    private int addOne(int index) {
         return (index + 1) % items.length;
     }
 
-    public int minusOne(int index) {
+    private int minusOne(int index) {
         return (index - 1 + items.length) % items.length;
     }
 
     public void addFirst(T item) {
         items[nextFirst] = item;
-        nextFirst = addOne(nextFirst);
+        nextFirst = minusOne(nextFirst);
         size += 1;
     }
 
     public void addLast(T item) {
         items[nextLast] = item;
-        nextLast = minusOne(nextLast);
+        nextLast = addOne(nextLast);
         size += 1;
     }
 
