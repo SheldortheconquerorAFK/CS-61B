@@ -16,7 +16,8 @@ public class ArrayDeque<T> {
     private void resize(int length) {
         T[] newArray = (T[]) new Object[length];
         int oldIndex = addOne(nextFirst);
-        for (int i = 0; i < size; i++) {    //System.arraycopy(items, oldIndex, newArray, 0, size());
+        for (int i = 0; i < size; i++) {
+            //System.arraycopy(items, oldIndex, newArray, 0, size());
             newArray[i] = items[oldIndex];
             oldIndex = addOne(oldIndex);
         }
