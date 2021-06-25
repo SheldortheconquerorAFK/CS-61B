@@ -6,23 +6,21 @@ public class ArrayDeque<T> {
     private int nextLast;
 
 
-
     public ArrayDeque() {
         size = 0;
         items = (T[]) new Object[8];
         nextFirst = 0;
         nextLast = 1;
-
     }
 
     private void resize(int length) {
-        T[] newitems = (T[]) new Object[length];
-        int oldindex = addOne(nextFirst);
-        for (int i = 0; i < size; i++) {
-            newitems[i] = items[oldindex];
-            oldindex = addOne(oldindex);
+        T[] newArray = (T[]) new Object[length];
+        int oldIndex = addOne(nextFirst);
+        for (int i = 0; i < size; i++) {    //System.arraycopy(items, oldIndex, newArray, 0, size());
+            newArray[i] = items[oldIndex];
+            oldIndex = addOne(oldIndex);
         }
-        this.items = newitems;
+        items = newArray;
         nextFirst = items.length - 1;
         nextLast = size;
     }
@@ -81,8 +79,6 @@ public class ArrayDeque<T> {
             resize(items.length / 2);
         }
         return value;
-
-
     }
 
     public T removeLast() {
@@ -90,7 +86,7 @@ public class ArrayDeque<T> {
             return null;
         }
         T value = items[minusOne(nextLast)];
-        items[addOne(nextFirst)] = null;
+        items[minusOne(nextFirst)] = null;
         nextLast = minusOne(nextLast);
         size -= 1;
         if (items.length >= 16 && size < (items.length / 4)) {
@@ -106,5 +102,4 @@ public class ArrayDeque<T> {
         int start = addOne(nextFirst);
         return items[(start + index) % items.length];
     }
-
 }
