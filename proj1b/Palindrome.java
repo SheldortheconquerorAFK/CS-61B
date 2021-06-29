@@ -22,7 +22,7 @@ public class Palindrome {
 
     private boolean isPalindrome(Deque<Character> p) {
 
-        if (p.size() == 0 || p.size() == 1){
+        if (p.size() == 0 || p.size() == 1) {
             return true;
         }
 
