@@ -45,6 +45,7 @@ public class Palindrome {
             return true;
         }
 
+
         if (cc.equalChars(word.charAt(0), word.charAt(len - 1))) {
             return isPalindrome(word.substring(1, len - 1), cc);
         }
