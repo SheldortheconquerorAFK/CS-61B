@@ -11,6 +11,7 @@ public class Palindrome {
     }
 
     public boolean isPalindrome(String word) {
+        word = word.toLowerCase();
         int len = word.length();
         ArrayDeque<Character> p = new ArrayDeque<>();
 
