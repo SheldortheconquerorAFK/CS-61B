@@ -52,4 +52,55 @@ public class Palindrome {
         return false;
     }
 
+    public static int[] flatten(int[][] x) {
+        int totalLength = 0;
+
+        for (int[] p: x) {
+            totalLength += p.length;
+        }
+
+        int[] a = new int[totalLength];
+        int aIndex = 0;
+
+        for (int[] p: x) {
+            for (int p0: p) {
+                a[aIndex] = p0;
+                aIndex += 1;
+            }
+        }
+
+        return a;
+    }
+
+    public void skippify() {
+        IntList p = this;
+        int n = 1;
+        while (p != null) {
+            IntList next = p.rest;
+            for (int index = 0; index < n; index += 1) {
+                next = p.rest;
+                next = next.rest;
+            }
+
+
+        }
+    }
+
+    public static void removeDuplicates(IntList p) {
+        if (p == null) {
+            return;
+        }
+        IntList current = p.rest;
+        IntList previous = p;
+        while (current != null) {
+            if (current.first == previous.first) {
+                previous.rest = current.rest;
+            } else {
+                previous = current;
+            }
+            current = current.rest;
+
+        }
+    }
+
 }
