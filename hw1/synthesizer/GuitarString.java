@@ -39,7 +39,6 @@ public class GuitarString {
         }
     }
 
-
     /* Advance the simulation one time step by performing one iteration of
      * the Karplus-Strong algorithm. 
      */
