@@ -1,7 +1,5 @@
 package synthesizer;
 
-import edu.princeton.cs.introcs.StdAudio;
-
 import java.util.ArrayList;
 
 //Make sure this class is public
@@ -17,7 +15,7 @@ public class GuitarString {
 
     /* Create a guitar string of the given frequency.  */
     public GuitarString(double frequency) {
-        buffer = new ArrayRingBuffer<>((int) (Math.round(SR/frequency)));
+        buffer = new ArrayRingBuffer<>((int) (Math.round(SR / frequency)));
 
         int index = 0;
         while (index < buffer.capacity()) {

@@ -1,6 +1,4 @@
 package synthesizer;
-import java.util.Iterator;
-
 
 public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     /* Index for the next dequeue or peek. */
@@ -13,7 +11,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     /**
      * Create a new ArrayRingBuffer with the given capacity.
      */
-    public ArrayRingBuffer (int capacity) {
+    public ArrayRingBuffer(int capacity) {
         this.first = 0;
         this.last = 0;
         this.fillCount = 0;
@@ -72,4 +70,28 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         return rb[first];
     }
 
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new BQIterator<>();
+    }
+
+    private class BQIterator<T> implements java.util.Iterator<T> {
+        int index = first;
+
+        @Override
+        public boolean hasNext() {
+            return index == last - 1;
+        }
+
+        @Override
+        public T next() {
+            T returnItem = (T) rb[index];
+            if (index == rb.length - 1) {
+                index = 0;
+            } else {
+                index++;
+            }
+            return returnItem;
+        }
+    }
 }
