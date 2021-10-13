@@ -14,13 +14,13 @@ public class Percolation {
         if (N <= 0) {
             throw new IllegalArgumentException("N must be an integer bigger than 0.");
         }
-        WeightedQuickUnionUF grid = new WeightedQuickUnionUF((int) Math.pow(N, 2) + 2);
+        grid = new WeightedQuickUnionUF((int) Math.pow(N, 2) + 2);
         length = N;
         virtualTopSiteIndex = (int) Math.pow(N, 2);
         virtualBottomSiteIndex = (int) Math.pow(N, 2) + 1;
         sitesOpened = 0;
 
-        isSiteOpen = new boolean[(int) Math.pow(N, 2) + 1];
+        isSiteOpen = new boolean[(int) Math.pow(N, 2) + 2];
         for (int i = 0; i < (int) Math.pow(N, 2) - 1; i++) {
             isSiteOpen[i] = false;
         }
