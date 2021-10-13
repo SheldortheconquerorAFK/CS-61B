@@ -22,7 +22,6 @@ public class Percolation {
         if (row > length - 1 || col > length - 1) {
             throw new IndexOutOfBoundsException("The row or column number is out of length of the grid.");
         }
-        int arrayIndex = length * row + col;
-        return arrayIndex;
+        return length * row + col;
     }
 }
