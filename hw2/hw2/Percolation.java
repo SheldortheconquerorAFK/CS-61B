@@ -30,14 +30,14 @@ public class Percolation {
 
     public void open(int row, int col) {
         if (row == 0 && !isSiteOpen[calcArrayIndex(row, col)]) {
-            grid.union(calcArrayIndex(row, col), virtualTopSiteIndex);  // Connect top row site with the virtual top site
+            grid.union(calcArrayIndex(row, col), virtualTopSiteIndex);
         }
         if (row == length - 1 && !isSiteOpen[calcArrayIndex(row, col)]) {
-            grid.union(calcArrayIndex(row, col), virtualBottomSiteIndex); // Connect bottom row site with the virtual bottom site
+            grid.union(calcArrayIndex(row, col), virtualBottomSiteIndex);
         }
-        isSiteOpen[calcArrayIndex(row, col)] = true;  // Mark specified site as "open"
-        sitesOpened++;  // Add number of sites opened by 1
-        connectNeighbour(row, col); // Check if site on four directions are open. If yes, union them
+        isSiteOpen[calcArrayIndex(row, col)] = true;
+        sitesOpened++;
+        connectNeighbour(row, col);
     }
 
     private void connectNeighbour(int row, int col) {
@@ -81,5 +81,9 @@ public class Percolation {
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

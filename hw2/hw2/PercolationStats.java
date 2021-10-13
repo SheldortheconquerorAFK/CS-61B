@@ -4,8 +4,8 @@ import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
 
 public class PercolationStats {
-    double[] result;
-    int T;
+    private double[] result;
+    private int T;
 
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0 || T <= 0) {
@@ -14,6 +14,7 @@ public class PercolationStats {
         pf = new PercolationFactory();
         result = new double[T];
         this.T = T;
+
         for (int i = 0; i < T; i++) {
             Percolation p = pf.make(N);
             while (!p.percolates()) {
