@@ -77,12 +77,7 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        for (int i = 0; i < length; i++) {
-            if (isFull(length - 1, i)) {
-                return true;
-            }
-        }
-        return false;
+        return grid.find(virtualTopSiteIndex) == grid.find(virtualBottomSiteIndex);
     }
 
     public static void main(String[] args) {
