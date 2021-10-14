@@ -11,7 +11,6 @@ public class PercolationStats {
         if (N <= 0 || T <= 0) {
             throw new IllegalArgumentException("N and T must be bigger than 0.");
         }
-        pf = new PercolationFactory();
         result = new double[T];
         this.T = T;
 

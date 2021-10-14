@@ -3,12 +3,12 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    WeightedQuickUnionUF grid;
-    int length;
-    boolean[] isSiteOpen;
-    int sitesOpened;
-    int virtualTopSiteIndex;
-    int virtualBottomSiteIndex;
+    private WeightedQuickUnionUF grid;
+    private int length;
+    private boolean[] isSiteOpen;
+    private int sitesOpened;
+    private int virtualTopSiteIndex;
+    private int virtualBottomSiteIndex;
 
     public Percolation(int N) {
         if (N <= 0) {
@@ -29,15 +29,17 @@ public class Percolation {
     }
 
     public void open(int row, int col) {
-        if (row == 0 && !isSiteOpen[calcArrayIndex(row, col)]) {
-            grid.union(calcArrayIndex(row, col), virtualTopSiteIndex);
+        if (!isOpen(row, col)) {
+            if (row == 0 && !isSiteOpen[calcArrayIndex(row, col)]) {
+                grid.union(calcArrayIndex(row, col), virtualTopSiteIndex);
+            }
+            if (row == length - 1 && !isSiteOpen[calcArrayIndex(row, col)]) {
+                grid.union(calcArrayIndex(row, col), virtualBottomSiteIndex);
+            }
+            isSiteOpen[calcArrayIndex(row, col)] = true;
+            sitesOpened++;
+            connectNeighbour(row, col);
         }
-        if (row == length - 1 && !isSiteOpen[calcArrayIndex(row, col)]) {
-            grid.union(calcArrayIndex(row, col), virtualBottomSiteIndex);
-        }
-        isSiteOpen[calcArrayIndex(row, col)] = true;
-        sitesOpened++;
-        connectNeighbour(row, col);
     }
 
     private void connectNeighbour(int row, int col) {
@@ -57,7 +59,7 @@ public class Percolation {
 
     private int calcArrayIndex(int row, int col) {
         if (row > length - 1 || col > length - 1) {
-            throw new IndexOutOfBoundsException("The row or column number is out of length of the grid.");
+            throw new IndexOutOfBoundsException();
         }
         return length * row + col;
     }
