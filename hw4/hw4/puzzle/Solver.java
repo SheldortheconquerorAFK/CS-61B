@@ -7,27 +7,35 @@ public class Solver {
     MinPQ<SearchNode> pq;
     Queue<WorldState> solution;
     SearchNode goal;
+    int counter = 0;
 
     public Solver(WorldState initial) {
         pq = new MinPQ<>();
         solution = new Queue<>();
         SearchNode initialNode = new SearchNode(initial, 0, null);
         pq.insert(initialNode);
+        counter++;
         goal = search(initialNode);
     }
 
     private SearchNode search(SearchNode min) {
         if (min.ws.isGoal()) {
+            solution.enqueue(pq.delMin().ws);
             return min;
         }
+
         solution.enqueue(pq.delMin().ws);
+
         for (WorldState neighbor : min.ws.neighbors()) {
-            if (neighbor.equals(min.prevNode.ws)) {
+            if (!(min.prevNode == null) && neighbor.equals(min.prevNode.ws)) {
                 continue;
             }
             SearchNode neighborNode = new SearchNode(neighbor, min.prevCount + 1, min);
             pq.insert(neighborNode);
+            counter++;
         }
+        System.out.println("Now pq has " + pq.size() + " items");
+
         return search(pq.min());
     }
 
@@ -49,11 +57,12 @@ public class Solver {
             ws = state;
             prevCount = pc;
             prevNode = pn;
-            countToGoal = ws.estimatedDistanceToGoal();
+            countToGoal = state.estimatedDistanceToGoal();
         }
 
+        @Override
         public int compareTo(SearchNode that) {
-            return that.prevCount + that.countToGoal - (this.prevCount + this.countToGoal);
+            return this.prevCount + this.countToGoal - (that.prevCount + that.countToGoal);
         }
     }
 }
