@@ -1,12 +1,12 @@
 package hw4.puzzle;
 
-import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.MinPQ;
 
 public class Solver {
     MinPQ<SearchNode> pq;
-    SearchNode goal;
     Queue<WorldState> solution;
+    SearchNode goal;
 
     public Solver(WorldState initial) {
         pq = new MinPQ<>();
@@ -14,19 +14,18 @@ public class Solver {
         SearchNode initialNode = new SearchNode(initial, 0, null);
         pq.insert(initialNode);
         goal = search(initialNode);
-
     }
 
-    private SearchNode search(SearchNode sn) {
-        if (sn.ws.isGoal()) {
-            return sn;
+    private SearchNode search(SearchNode min) {
+        if (min.ws.isGoal()) {
+            return min;
         }
         solution.enqueue(pq.delMin().ws);
-        for (WorldState neighbor : sn.ws.neighbors()) {
-            if (neighbor.equals(sn.prevNode.ws)) {
+        for (WorldState neighbor : min.ws.neighbors()) {
+            if (neighbor.equals(min.prevNode.ws)) {
                 continue;
             }
-            SearchNode neighborNode = new SearchNode(neighbor, sn.prevCount + 1, sn);
+            SearchNode neighborNode = new SearchNode(neighbor, min.prevCount + 1, min);
             pq.insert(neighborNode);
         }
         return search(pq.min());
