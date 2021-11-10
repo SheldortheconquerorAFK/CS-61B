@@ -9,7 +9,11 @@ public class Board implements WorldState {
     int N;
 
     public Board(int[][] tiles) {
-        this.tiles = tiles;
+        int[][] copyOfTiles = new int[tiles.length][tiles.length];
+        for (int i = 0; i < tiles.length; i++) {
+            System.arraycopy(tiles[i], 0, copyOfTiles[i], 0, tiles.length);
+        }
+        this.tiles = copyOfTiles;
         this.N = tiles.length;
     }
 

@@ -7,36 +7,38 @@ public class Solver {
     MinPQ<SearchNode> pq;
     Queue<WorldState> solution;
     SearchNode goal;
-    int counter = 0;
+    //int counter = 0;
 
     public Solver(WorldState initial) {
         pq = new MinPQ<>();
         solution = new Queue<>();
         SearchNode initialNode = new SearchNode(initial, 0, null);
         pq.insert(initialNode);
-        counter++;
-        goal = search(initialNode);
+        //counter++;
+        search();
     }
 
-    private SearchNode search(SearchNode min) {
-        if (min.ws.isGoal()) {
-            solution.enqueue(pq.delMin().ws);
-            return min;
+    private void search() {
+        if (pq.min().worldState.isGoal()) {
+            goal = pq.delMin();
+            solution.enqueue(goal.worldState);
+            return;
         }
 
-        solution.enqueue(pq.delMin().ws);
+        SearchNode next = pq.delMin();
+        solution.enqueue(next.worldState);
+        System.out.println(solution.size());
 
-        for (WorldState neighbor : min.ws.neighbors()) {
-            if (!(min.prevNode == null) && neighbor.equals(min.prevNode.ws)) {
+        for (WorldState neighbor : next.worldState.neighbors()) {
+            if (next.prevNode != null && neighbor.equals(next.prevNode.worldState)) {
                 continue;
             }
-            SearchNode neighborNode = new SearchNode(neighbor, min.prevCount + 1, min);
-            pq.insert(neighborNode);
-            counter++;
+            SearchNode nextNeighbor = new SearchNode(neighbor, next.prevCount + 1, next);
+            pq.insert(nextNeighbor);
+            //counter++;
         }
-        System.out.println("Now pq has " + pq.size() + " items");
 
-        return search(pq.min());
+        search();
     }
 
     public int moves() {
@@ -48,23 +50,23 @@ public class Solver {
     }
 
     private static class SearchNode implements Comparable<SearchNode> {
-        WorldState ws;
+        WorldState worldState;
         int prevCount;
         SearchNode prevNode;
-        int countToGoal;
+        int distToGoal;
 
-        private SearchNode(WorldState state, int pc, SearchNode pn) {
-            ws = state;
-            prevCount = pc;
-            prevNode = pn;
-            countToGoal = state.estimatedDistanceToGoal();
+        private SearchNode(WorldState worldState, int prevCount, SearchNode prevNode) {
+            this.worldState = worldState;
+            this.prevCount = prevCount;
+            this.prevNode = prevNode;
+            this.distToGoal = worldState.estimatedDistanceToGoal();
         }
 
         @Override
         public int compareTo(SearchNode that) {
-            if (this.prevCount + this.countToGoal > that.prevCount + that.countToGoal) {
+            if (this.prevCount + this.distToGoal > that.prevCount + that.distToGoal) {
                 return 1;
-            } else if (this.prevCount + this.countToGoal == that.prevCount + that.countToGoal) {
+            } else if (this.prevCount + this.distToGoal == that.prevCount + that.distToGoal) {
                 return 0;
             } else {
                 return -1;
