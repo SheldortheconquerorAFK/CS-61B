@@ -19,15 +19,15 @@ public class Solver {
     }
 
     private void search() {
-        if (pq.min().worldState.isGoal()) {
-            goal = pq.delMin();
+        SearchNode next = pq.delMin();
+        if (next.worldState.isGoal()) {
+            goal = next;
             solution.enqueue(goal.worldState);
             return;
         }
 
-        SearchNode next = pq.delMin();
         solution.enqueue(next.worldState);
-        System.out.println(solution.size());
+        //System.out.println(solution.size());
 
         for (WorldState neighbor : next.worldState.neighbors()) {
             if (next.prevNode != null && neighbor.equals(next.prevNode.worldState)) {
