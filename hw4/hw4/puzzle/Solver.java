@@ -62,7 +62,13 @@ public class Solver {
 
         @Override
         public int compareTo(SearchNode that) {
-            return this.prevCount + this.countToGoal - (that.prevCount + that.countToGoal);
+            if (this.prevCount + this.countToGoal > that.prevCount + that.countToGoal) {
+                return 1;
+            } else if (this.prevCount + this.countToGoal == that.prevCount + that.countToGoal) {
+                return 0;
+            } else {
+                return -1;
+            }
         }
     }
 }
