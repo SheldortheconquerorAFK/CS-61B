@@ -9,21 +9,74 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
     public int[] edgeTo;
     public boolean[] marked;
     */
+    Maze maze;
+    int s;
+    int t;
+    boolean targetFound;
+    ArrayDeque<Integer> dq;
 
     public MazeBreadthFirstPaths(Maze m, int sourceX, int sourceY, int targetX, int targetY) {
         super(m);
         // Add more variables here!
+        maze = m;
+        s = maze.xyTo1D(sourceX, sourceY);
+        t = maze.xyTo1D(targetX, targetY);
+        targetFound = false;
+        distTo[s] = 0;
+        edgeTo[s] = s;
+        dq = new ArrayDeque<Integer>();
+        dq.add(s);
+        marked[s] = true;
+        announce();
+        bfs();
     }
 
     /** Conducts a breadth first search of the maze starting at the source. */
     private void bfs() {
         // TODO: Your code here. Don't forget to update distTo, edgeTo, and marked, as well as call announce()
+        dq.remove(s);
+        for (int w : maze.adj(s)) {
+            marked[w] = true;
+            distTo[w] = distTo[s] + 1;
+            edgeTo[w] = s;
+            if (w == t) {
+                return;
+            }
+            dq.add(w);
+            announce();
+        }
+        while (!dq.isEmpty()) {
+            int v = dq.remove();
+            for (int w : maze.adj(v)) {
+                marked[w] = true;
+                distTo[w] = distTo[v] + 1;
+                edgeTo[w] = v;
+                if (w == t) {
+                    return;
+                }
+                dq.add(w);
+                announce();
+            }
+
+        }
+    }
+
+    private void bfs(int v) {
+        marked[v] = true;
+        dq.remove(v);
+        for (int w : maze.adj(v)) {
+            if (!marked[w]) {
+                edgeTo[w] = v;
+                distTo[w] = distTo[v] + 1;
+
+            }
+        }
     }
 
 
     @Override
     public void solve() {
-        // bfs();
+        bfs();
     }
 }
 
