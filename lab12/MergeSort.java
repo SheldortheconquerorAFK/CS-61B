@@ -1,4 +1,8 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 public class MergeSort {
     /**
@@ -34,8 +38,13 @@ public class MergeSort {
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
-        return null;
+        Queue<Queue<Item>> queues = new Queue<>();
+        for (Item item : items) {
+            Queue<Item> q = new Queue<>();
+            q.enqueue(item);
+            queues.enqueue(q);
+        }
+        return queues;
     }
 
     /**
@@ -53,14 +62,51 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
-        // Your code here!
-        return null;
+        Queue<Item> q = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            q.enqueue(getMin(q1, q2));
+        }
+        return q;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        // Your code here!
+        if (items.size() == 1) {
+            return items;
+        }
+        Queue<Queue<Item>> queues = makeSingleItemQueues(items);
+        Queue<Item> leftHalf = new Queue<>();
+        Queue<Item> rightHalf = new Queue<>();
+        for (int i = 0; i < queues.size() / 2; i++) {
+            leftHalf.enqueue(queues.dequeue().dequeue());
+        }
+        while (!queues.isEmpty()) {
+            rightHalf.enqueue(queues.dequeue().dequeue());
+        }
+        leftHalf = mergeSort(leftHalf);
+        rightHalf = mergeSort(rightHalf);
+        items = mergeSortedQueues(leftHalf, rightHalf);
         return items;
+    }
+
+    /** The test client for this version of mergesort. */
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        students.enqueue("Katherine");
+        students.enqueue("Bobby");
+        System.out.println(students + "\n");
+
+        Queue<String> oldStudents = new Queue<>();
+        for (String student : students) {
+            oldStudents.enqueue(student);
+        }
+
+        students = mergeSort(students);
+        System.out.println(oldStudents + "\n");
+        System.out.println(students);
     }
 }
