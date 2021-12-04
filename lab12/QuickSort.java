@@ -71,13 +71,12 @@ public class QuickSort {
         Queue<Item> greater = new Queue<>();
         partition(items, pivot, less, equal, greater);
         less = quickSort(less);
-        equal = quickSort(equal);
         greater = quickSort(greater);
         items = catenate(catenate(less, equal), greater);
         return items;
     }
 
-    /** The test client for this version of mergesort. */
+    /** The test client for this version of quicksort. */
     public static void main(String[] args) {
         Queue<String> students = new Queue<>();
         students.enqueue("Alice");
