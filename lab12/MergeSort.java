@@ -1,8 +1,6 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
 
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class MergeSort {
     /**
@@ -72,7 +70,7 @@ public class MergeSort {
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        if (items.size() == 1) {
+        if (items.size() <= 1) {
             return items;
         }
         Queue<Queue<Item>> queues = makeSingleItemQueues(items);

@@ -7,7 +7,7 @@ public class QuickSort {
      * The items in q2 will be catenated after all of the items in q1.
      */
     private static <Item extends Comparable> Queue<Item> catenate(Queue<Item> q1, Queue<Item> q2) {
-        Queue<Item> catenated = new Queue<Item>();
+        Queue<Item> catenated = new Queue<>();
         for (Item item : q1) {
             catenated.enqueue(item);
         }
@@ -47,13 +47,54 @@ public class QuickSort {
     private static <Item extends Comparable> void partition(
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
-        // Your code here!
+        while (!unsorted.isEmpty()) {
+            Item item = unsorted.dequeue();
+            if (item.compareTo(pivot) < 0) {
+                less.enqueue(item);
+            } else if (item.compareTo(pivot) == 0) {
+                equal.enqueue(item);
+            } else {
+                greater.enqueue(item);
+            }
+        }
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
-        // Your code here!
+        if (items.size() <= 1) {
+            return items;
+        }
+        Item pivot = getRandomItem(items);
+        Queue<Item> less = new Queue<>();
+        Queue<Item> equal = new Queue<>();
+        Queue<Item> greater = new Queue<>();
+        partition(items, pivot, less, equal, greater);
+        less = quickSort(less);
+        equal = quickSort(equal);
+        greater = quickSort(greater);
+        items = catenate(catenate(less, equal), greater);
         return items;
+    }
+
+    /** The test client for this version of mergesort. */
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        students.enqueue("Katherine");
+        students.enqueue("Bobby");
+
+        System.out.println(students + "\n");
+
+        Queue<String> oldStudents = new Queue<>();
+        for (String student : students) {
+            oldStudents.enqueue(student);
+        }
+
+        students = quickSort(students);
+        System.out.println(oldStudents + "\n");
+        System.out.println(students);
     }
 }
