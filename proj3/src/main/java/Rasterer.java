@@ -1,3 +1,4 @@
+import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +11,9 @@ import java.util.Map;
 public class Rasterer {
 
     public Rasterer() {
-        // YOUR CODE HERE
+        // YOUR CODE HERE, AND I WOULD NOT TAKE THIS LINE OFF TILL I TOTALLY GET THROUGH PART I, AS A MARKER.
+
+
     }
 
     /**
@@ -42,8 +45,26 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        System.out.println(params);
         Map<String, Object> results = new HashMap<>();
+        results.put("render_grid", null);
+        results.put("raster_ul_lon", 0);
+        results.put("raster_ul_lat", 0);
+        results.put("raster_lr_lon", 0);
+        results.put("raster_lr_lat", 0);
+        results.put("depth", 0);
+        results.put("query_success", false);  // Initialize all required fields in results
+
+        if (params.get("ullat") < MapServer.ROOT_LRLAT || params.get("ullon") > MapServer.ROOT_LRLON || params.get("lrlat") > MapServer.ROOT_ULLAT || params.get("lrlon") < MapServer.ROOT_ULLON) {
+            System.out.println("Coordinates provided by request completely go off the bound of the entire map.");
+            return results;
+        }
+        if (params.get("ullat") <= params.get("lrlat") || params.get("ullon") >= params.get("lrlon")) {
+            System.out.println("Coordinates provided by request have wrong inequality.");
+            return results;
+        }
+
+
         System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
                            + "your browser.");
         return results;
