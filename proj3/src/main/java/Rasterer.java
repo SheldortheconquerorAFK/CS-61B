@@ -65,7 +65,7 @@ public class Rasterer {
             return results;
         }
 
-        double reqLonDPP = lonDPP(params.get("lrlon"), params.get("ullon"), params.get("w"));
+        double reqLonDPP = lonDPP(params.get("ullon"), params.get("lrlon"), params.get("w"));
         int depth = calcDepth(reqLonDPP);
 
         System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
@@ -73,7 +73,7 @@ public class Rasterer {
         return results;
     }
 
-    private double lonDPP(double lrlon, double ullon, double width) {
+    private double lonDPP(double ullon, double lrlon, double width) {
         return (lrlon - ullon) / width;
     }
 
@@ -87,5 +87,21 @@ public class Rasterer {
             currentLonDPP /= 2;
         }
         return depth;
+    }
+
+    private int[] calcXIndex(double ullon, double lrlon, int depth) {
+        int[] xIndex = new int[2];
+        int startXIndex = (int) ((ullon - MapServer.ROOT_ULLON) / ((MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / depth));
+        if (startXIndex < 0) {
+            startXIndex = 0;
+        }
+        xIndex[0] = startXIndex;
+
+        int endXIndex = (int) ((MapServer.ROOT_LRLON - lrlon) / ((MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / depth));
+        if (endXIndex < 0) {
+            endXIndex = depth;
+        }
+        xIndex[1] = endXIndex;
+        return xIndex;
     }
 }
