@@ -83,9 +83,9 @@ public class Rasterer {
             }
         }
 
-        double rasterullon = MapServer.ROOT_LRLON + startX * tileWidth;
+        double rasterullon = MapServer.ROOT_ULLON + startX * tileWidth;
         double rasterullat = MapServer.ROOT_ULLAT - startY * tileHeight;
-        double rasterlrlon = MapServer.ROOT_LRLON + (endX + 1) * tileWidth;
+        double rasterlrlon = MapServer.ROOT_ULLON + (endX + 1) * tileWidth;
         double rasterlrlat = MapServer.ROOT_ULLAT - (endY + 1) * tileHeight;
 
         results.put("render_grid", renderGrid);
@@ -105,7 +105,7 @@ public class Rasterer {
     private int calcDepth(double reqLonDPP) {
         double currentLonDPP = DEPTH0_LONDPP;
         int depth = 0;
-        for (; depth < 8; depth++) {
+        for (; depth < 7; depth++) {
             if (currentLonDPP <= reqLonDPP) {
                 return depth;
             }
