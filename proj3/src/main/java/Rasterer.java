@@ -56,20 +56,45 @@ public class Rasterer {
         results.put("depth", 0);
         results.put("query_success", false);  // Initialize all required fields in results
 
-        if (params.get("ullat") < MapServer.ROOT_LRLAT || params.get("ullon") > MapServer.ROOT_LRLON || params.get("lrlat") > MapServer.ROOT_ULLAT || params.get("lrlon") < MapServer.ROOT_ULLON) {
+        if (params.get("ullat") <= MapServer.ROOT_LRLAT || params.get("ullon") >= MapServer.ROOT_LRLON || params.get("lrlat") >= MapServer.ROOT_ULLAT || params.get("lrlon") <= MapServer.ROOT_ULLON) {
             System.out.println("Coordinates provided by request completely go off the bound of the entire map.");
             return results;
         }
-        if (params.get("ullat") < params.get("lrlat") || params.get("ullon") > params.get("lrlon")) {
+        if (params.get("ullat") <= params.get("lrlat") || params.get("ullon") >= params.get("lrlon")) {
             System.out.println("Coordinates provided by request have wrong inequality.");
             return results;
         }
 
         double reqLonDPP = lonDPP(params.get("ullon"), params.get("lrlon"), params.get("w"));
         int depth = calcDepth(reqLonDPP);
+        int[] xIndex = calcXIndex(params.get("ullon"), params.get("lrlon"), depth);
+        int startX = xIndex[0];
+        int endX = xIndex[1];
+        int[] yIndex = calcYIndex(params.get("ullat"), params.get("lrlat"), depth);
+        int startY = yIndex[0];
+        int endY = yIndex[1];
+        double tileWidth = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (Math.pow(2, depth));
+        double tileHeight = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / (Math.pow(2, depth));
 
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        String[][] renderGrid = new String[endY - startY + 1][endX - startX + 1];
+        for (int y = 0; y < endY - startY + 1; y++) {
+            for (int x = 0; x < endX - startX + 1; x++) {
+                renderGrid[y][x] = String.format("d%1$d_x%2$d_y%3$d.png", depth, x + startX, y + startY);
+            }
+        }
+
+        double rasterullon = MapServer.ROOT_LRLON + startX * tileWidth;
+        double rasterullat = MapServer.ROOT_ULLAT - startY * tileHeight;
+        double rasterlrlon = MapServer.ROOT_LRLON + (endX + 1) * tileWidth;
+        double rasterlrlat = MapServer.ROOT_ULLAT - (endY + 1) * tileHeight;
+
+        results.put("render_grid", renderGrid);
+        results.put("raster_ul_lon", rasterullon);
+        results.put("raster_ul_lat", rasterullat);
+        results.put("raster_lr_lon", rasterlrlon);
+        results.put("raster_lr_lat", rasterlrlat);
+        results.put("depth", depth);
+        results.put("query_success", true);
         return results;
     }
 
@@ -90,18 +115,36 @@ public class Rasterer {
     }
 
     private int[] calcXIndex(double ullon, double lrlon, int depth) {
+        double tileWidth = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (Math.pow(2, depth));
         int[] xIndex = new int[2];
-        int startXIndex = (int) ((ullon - MapServer.ROOT_ULLON) / ((MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / depth));
+        int startXIndex = (int) ((ullon - MapServer.ROOT_ULLON) / tileWidth);
         if (startXIndex < 0) {
-            startXIndex = 0;
+            startXIndex = 0; // In this case the left bond of query box goes off that of the entire map, so cut that part off and make x0 as start index
         }
         xIndex[0] = startXIndex;
 
-        int endXIndex = (int) ((MapServer.ROOT_LRLON - lrlon) / ((MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / depth));
-        if (endXIndex < 0) {
+        int endXIndex = (int) ((lrlon - MapServer.ROOT_ULLON) / tileWidth);
+        if (lrlon >= MapServer.ROOT_LRLON) {
             endXIndex = depth;
         }
         xIndex[1] = endXIndex;
         return xIndex;
+    }
+
+    private int[] calcYIndex(double ullat, double lrlat, int depth) {
+        double tileHeight = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / (Math.pow(2, depth));
+        int[] yIndex = new int[2];
+        int startYIndex = (int) ((MapServer.ROOT_ULLAT - ullat) / tileHeight);
+        if (startYIndex < 0) {
+            startYIndex = 0; // In this case the upper bond of query box goes off that of the entire map, so cut that part off and make y0 as start index
+        }
+        yIndex[0] = startYIndex;
+
+        int endYIndex = (int) ((MapServer.ROOT_ULLAT - lrlat) / tileHeight);
+        if (lrlat <= MapServer.ROOT_LRLAT) {
+            endYIndex = depth;
+        }
+        yIndex[1] = endYIndex;
+        return yIndex;
     }
 }
