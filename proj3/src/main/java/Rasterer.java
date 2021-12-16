@@ -125,7 +125,7 @@ public class Rasterer {
 
         int endXIndex = (int) ((lrlon - MapServer.ROOT_ULLON) / tileWidth);
         if (lrlon >= MapServer.ROOT_LRLON) {
-            endXIndex = depth;
+            endXIndex = (int) Math.pow(2, depth) - 1;
         }
         xIndex[1] = endXIndex;
         return xIndex;
@@ -142,7 +142,7 @@ public class Rasterer {
 
         int endYIndex = (int) ((MapServer.ROOT_ULLAT - lrlat) / tileHeight);
         if (lrlat <= MapServer.ROOT_LRLAT) {
-            endYIndex = depth;
+            endYIndex = (int) Math.pow(2, depth) - 1;
         }
         yIndex[1] = endYIndex;
         return yIndex;
