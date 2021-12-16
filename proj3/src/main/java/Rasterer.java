@@ -9,6 +9,7 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    public static final double DEPTH0_LONDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
 
     public Rasterer() {
         // YOUR CODE HERE, AND I WOULD NOT TAKE THIS LINE OFF TILL I TOTALLY GET THROUGH PART I, AS A MARKER.
@@ -59,15 +60,32 @@ public class Rasterer {
             System.out.println("Coordinates provided by request completely go off the bound of the entire map.");
             return results;
         }
-        if (params.get("ullat") <= params.get("lrlat") || params.get("ullon") >= params.get("lrlon")) {
+        if (params.get("ullat") < params.get("lrlat") || params.get("ullon") > params.get("lrlon")) {
             System.out.println("Coordinates provided by request have wrong inequality.");
             return results;
         }
 
+        double reqLonDPP = lonDPP(params.get("lrlon"), params.get("ullon"), params.get("w"));
+        int depth = calcDepth(reqLonDPP);
 
         System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
                            + "your browser.");
         return results;
     }
 
+    private double lonDPP(double lrlon, double ullon, double width) {
+        return (lrlon - ullon) / width;
+    }
+
+    private int calcDepth(double reqLonDPP) {
+        double currentLonDPP = DEPTH0_LONDPP;
+        int depth = 0;
+        for (; depth < 8; depth++) {
+            if (currentLonDPP <= reqLonDPP) {
+                return depth;
+            }
+            currentLonDPP /= 2;
+        }
+        return depth;
+    }
 }
