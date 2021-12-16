@@ -11,11 +11,7 @@ import java.util.Map;
 public class Rasterer {
     public static final double DEPTH0_LONDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
 
-    public Rasterer() {
-        // YOUR CODE HERE, AND I WOULD NOT TAKE THIS LINE OFF TILL I TOTALLY GET THROUGH PART I, AS A MARKER.
-
-
-    }
+    public Rasterer() {}
 
     /**
      * Takes a user query and finds the grid of images that best matches the query. These
