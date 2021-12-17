@@ -1,4 +1,3 @@
-import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import java.util.Map;
 public class Rasterer {
     public static final double DEPTH0_LONDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
 
-    public Rasterer() {}
+    public Rasterer() { }
 
     /**
      * Takes a user query and finds the grid of images that best matches the query. These
