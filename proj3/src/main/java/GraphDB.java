@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
+    Map<Long, Node> nodes = new TreeMap<>();
+
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -145,7 +147,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +156,56 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodes.get(v).lat;
+    }
+
+    public static class Node {
+        public double lon;
+        public double lat;
+        public long id;
+        public Map<String, String> extraInfo;
+
+        public Node(double lon, double lat, long id) {
+            this.lon = lon;
+            this.lat = lat;
+            this.id = id;
+            extraInfo = new TreeMap<>();
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (that.getClass() != this.getClass()) {
+                return false;
+            } else {
+                return this.id == ((Node) that).id; }
+        }
+    }
+
+    public static class Edge {
+        public Node from;
+        public Node to;
+        public double weight;
+
+        public Edge(Node from, Node to) {
+            this.from = from;
+            this.to = to;
+            this.weight = distance(from.lon, from.lat, to.lon, to.lat);
+        }
+    }
+
+    public static class Graph {
+        public int V;
+        public int E;
+        public Map<Node, Set<Node>> adj;
+
+        public Graph() {
+            V = 0;
+            E = 0;
+            adj = new HashMap<>();
+        }
+
+        public void addNode(long id) {
+
+        }
     }
 }
