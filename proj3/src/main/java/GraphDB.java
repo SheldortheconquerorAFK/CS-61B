@@ -20,8 +20,7 @@ import java.util.*;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
-    Map<Long, Node> nodes = new TreeMap<>();
-
+    public Graph g;
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -29,6 +28,7 @@ public class GraphDB {
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
+        g = new Graph();
         try {
             File inputFile = new File(dbPath);
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -68,7 +68,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return g.nodes.keySet();
     }
 
     /**
@@ -77,7 +77,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return g.nodes.get(v).adj;
     }
 
     /**
@@ -147,7 +147,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return nodes.get(v).lon;
+        return g.nodes.get(v).lon;
     }
 
     /**
@@ -156,20 +156,25 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return nodes.get(v).lat;
+        return g.nodes.get(v).lat;
     }
 
     public static class Node {
-        public double lon;
-        public double lat;
-        public long id;
-        public Map<String, String> extraInfo;
+        double lon;
+        double lat;
+        long id;
+        double distTo;
+        Map<String, String> extraInfo;
+        ArrayList<Long> adj;
+
 
         public Node(double lon, double lat, long id) {
             this.lon = lon;
             this.lat = lat;
             this.id = id;
+            this.distTo = Double.POSITIVE_INFINITY;
             extraInfo = new TreeMap<>();
+            adj = new ArrayList<>();
         }
 
         @Override
@@ -182,9 +187,9 @@ public class GraphDB {
     }
 
     public static class Edge {
-        public Node from;
-        public Node to;
-        public double weight;
+        Node from;
+        Node to;
+        double weight;
 
         public Edge(Node from, Node to) {
             this.from = from;
@@ -194,18 +199,45 @@ public class GraphDB {
     }
 
     public static class Graph {
-        public int V;
-        public int E;
-        public Map<Node, Set<Node>> adj;
+        int V;
+        Map<Long, Node> nodes;
 
         public Graph() {
             V = 0;
-            E = 0;
-            adj = new HashMap<>();
+            nodes = new TreeMap<>();
         }
 
-        public void addNode(long id) {
+        public void addNode(Node n) {
+            nodes.put(n.id, n);
+            V++;
+        }
 
+        public void addEdge(Edge e) {
+            e.from.adj.add(e.to.id);
+            e.to.adj.add(e.from.id);
+        }
+
+        public void removeNode(Node n) {
+            for (Long id : n.adj) {
+                nodes.get(id).adj.remove(n.id);
+            }
+            nodes.remove(n.id);
+            V--;
+        }
+
+        public void removeNode(long id) {
+            for (Long i : nodes.get(id).adj) {
+                nodes.get(i).adj.remove(id);
+            }
+            nodes.remove(id);
+            V--;
+        }
+    }
+
+    public static class distToComparator implements Comparator<Node> {
+        @Override
+        public int compare(Node o1, Node o2) {
+            return (int) Math.signum(o1.distTo - o2.distTo);
         }
     }
 }
