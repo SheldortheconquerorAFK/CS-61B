@@ -20,7 +20,7 @@ import java.util.*;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
-    public Graph g;
+    public Graph graph;
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -28,7 +28,7 @@ public class GraphDB {
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
-        g = new Graph();
+        graph = new Graph();
         try {
             File inputFile = new File(dbPath);
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -68,7 +68,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return g.nodes.keySet();
+        return graph.nodes.keySet();
     }
 
     /**
@@ -77,7 +77,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return g.nodes.get(v).adj;
+        return graph.nodes.get(v).adj;
     }
 
     /**
@@ -147,7 +147,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return g.nodes.get(v).lon;
+        return graph.nodes.get(v).lon;
     }
 
     /**
@@ -156,7 +156,7 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return g.nodes.get(v).lat;
+        return graph.nodes.get(v).lat;
     }
 
     public static class Node {
@@ -165,7 +165,7 @@ public class GraphDB {
         long id;
         double distTo;
         Map<String, String> extraInfo;
-        ArrayList<Long> adj;
+        Set<Long> adj;
 
 
         public Node(double lon, double lat, long id) {
@@ -174,7 +174,7 @@ public class GraphDB {
             this.id = id;
             this.distTo = Double.POSITIVE_INFINITY;
             extraInfo = new TreeMap<>();
-            adj = new ArrayList<>();
+            adj = new TreeSet<>();
         }
 
         @Override
@@ -238,6 +238,18 @@ public class GraphDB {
         @Override
         public int compare(Node o1, Node o2) {
             return (int) Math.signum(o1.distTo - o2.distTo);
+        }
+    }
+
+    public static class Way {
+        Map<Long, Node> nodes;
+        ArrayList<Edge> edges;
+        Map<String, String> extraInfo;
+
+        public Way() {
+            nodes = new TreeMap<>();
+            edges = new ArrayList<>();
+            extraInfo = new TreeMap<>();
         }
     }
 }
