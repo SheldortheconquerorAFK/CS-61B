@@ -59,6 +59,11 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
+        for (Long id : graph.nodes.keySet()) {
+            if (graph.nodes.get(id).adj.isEmpty()) {
+                graph.nodes.remove(id);
+            }
+        }
         // TODO: Your code here.
     }
 
