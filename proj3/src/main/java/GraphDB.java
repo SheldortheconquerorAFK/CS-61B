@@ -168,15 +168,17 @@ public class GraphDB {
         double lon;
         double lat;
         long id;
-        double distTo;
-        Map<String, String> extraInfo;
-        Set<Long> adj;
+        long way;
+        double distTo; // Encapsulate it into instance variable make it accessible easily
+        Map<String, String> extraInfo; // Record attributes
+        Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
 
 
         public Node(double lon, double lat, long id) {
             this.lon = lon;
             this.lat = lat;
             this.id = id;
+            this.way = 0;
             this.distTo = Double.POSITIVE_INFINITY;
             extraInfo = new TreeMap<>();
             adj = new TreeSet<>();
@@ -184,7 +186,7 @@ public class GraphDB {
 
         @Override
         public boolean equals(Object that) {
-            if (that.getClass() != this.getClass()) {
+            if (this.getClass() != that.getClass()) {
                 return false;
             } else {
                 return this.id == ((Node) that).id; }
@@ -200,26 +202,32 @@ public class GraphDB {
             this.from = from;
             this.to = to;
             this.weight = distance(from.lon, from.lat, to.lon, to.lat);
+            from.adj.add(to.id);
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (this.getClass() != that.getClass()) {
+                return false;
+            } else {
+                return this.from.equals(((Edge) that).from) && this.to.equals(((Edge) that).to);
+            }
         }
     }
 
     public static class Graph {
-        int V;
-        Map<Long, Node> nodes;
+        Map<Long, Node> nodes; // Reflect IDs of nodes to themselves
+        Set<Edge> edges;
+        Set<Way> ways;
 
         public Graph() {
-            V = 0;
             nodes = new TreeMap<>();
+            edges = new HashSet<>(); // No need for sorting these edges so pick a hashset
+            ways = new HashSet<>();
         }
 
-        public void addNode(Node n) {
-            nodes.put(n.id, n);
-            V++;
-        }
-
-        public void addEdge(Edge e) {
-            e.from.adj.add(e.to.id);
-            e.to.adj.add(e.from.id);
+        public int V() {
+            return nodes.size();
         }
 
         public void removeNode(Node n) {
@@ -227,7 +235,7 @@ public class GraphDB {
                 nodes.get(id).adj.remove(n.id);
             }
             nodes.remove(n.id);
-            V--;
+            edges.removeIf(e -> e.from.id == n.id || e.to.id == n.id);
         }
 
         public void removeNode(long id) {
@@ -235,7 +243,7 @@ public class GraphDB {
                 nodes.get(i).adj.remove(id);
             }
             nodes.remove(id);
-            V--;
+            edges.removeIf(e -> e.from.id == id || e.to.id == id);
         }
     }
 
@@ -248,12 +256,14 @@ public class GraphDB {
 
     public static class Way {
         Map<Long, Node> nodes;
-        ArrayList<Edge> edges;
+        Set<Edge> edges;
+        long id;
         Map<String, String> extraInfo;
 
         public Way() {
             nodes = new TreeMap<>();
-            edges = new ArrayList<>();
+            edges = new HashSet<>();
+            id = 0;
             extraInfo = new TreeMap<>();
         }
     }

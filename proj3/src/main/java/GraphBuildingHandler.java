@@ -3,10 +3,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.awt.font.GraphicAttribute;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  Parses OSM XML files using an XML SAX parser. Used to construct the graph of roads for
@@ -43,7 +40,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private boolean isRoadForCar;
     private Long lastNode;
     private GraphDB.Way lastWay;
-    private ArrayList<GraphDB.Node> temp;
+    private ArrayDeque<GraphDB.Node> temp;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -54,7 +51,7 @@ public class GraphBuildingHandler extends DefaultHandler {
         isRoadForCar = false;
         lastNode = null;
         lastWay = null;
-        temp = new ArrayList<>();
+        temp = new ArrayDeque<>();
     }
 
     /**
@@ -84,6 +81,7 @@ public class GraphBuildingHandler extends DefaultHandler {
 
             GraphDB.Node currentNode = new GraphDB.Node(Double.parseDouble(attributes.getValue("lon")), Double.parseDouble(attributes.getValue("lat")), Long.parseLong(attributes.getValue("id")));
             g.graph.nodes.put(currentNode.id, currentNode);
+            lastNode = currentNode.id;
             /* TODO Use the above information to save a "node" to somewhere. */
             /* Hint: A graph-like structure would be nice. */
 
@@ -92,12 +90,13 @@ public class GraphBuildingHandler extends DefaultHandler {
             activeState = "way";
 //            System.out.println("Beginning a way...");
             GraphDB.Way currentWay = new GraphDB.Way();
+            currentWay.id = Long.parseLong(attributes.getValue("id"));
             lastWay = currentWay;
         } else if (activeState.equals("way") && qName.equals("nd")) {
             /* While looking at a way, we found a <nd...> tag. */
             //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
-
-            temp.add(g.graph.nodes.get(Long.parseLong(attributes.getValue("ref"))));
+            GraphDB.Node currentNode = g.graph.nodes.get(Long.parseLong(attributes.getValue("ref")));
+            temp.offer(currentNode);
             /* TODO Use the above id to make "possible" connections between the nodes in this way */
             /* Hint1: It would be useful to remember what was the last node in this way. */
             /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
@@ -156,16 +155,27 @@ public class GraphBuildingHandler extends DefaultHandler {
             chance to actually connect the nodes together if the way is valid. */
 //            System.out.println("Finishing a way...");
             if (isRoadForCar) {
-                for (int i = 0; i < temp.size() - 1; i++) {
-                    GraphDB.Edge e = new GraphDB.Edge(temp.get(i), temp.get(i + 1));
-                    lastWay.nodes.put(temp.get(i).id, temp.get(i));
-                    lastWay.edges.add(e);
+                while (!temp.isEmpty()) {
+                    GraphDB.Node current = temp.poll();
+                    if (temp.peek() != null) {
+                        GraphDB.Node next = temp.peek();
+                        GraphDB.Edge e1 = new GraphDB.Edge(current, next);
+                        GraphDB.Edge e2 = new GraphDB.Edge(next, current);
+                        g.graph.edges.add(e1);
+                        g.graph.edges.add(e2);
+                        lastWay.nodes.put(current.id, current);
+                        lastWay.nodes.put(next.id, next);
+                        lastWay.edges.add(e1);
+                        lastWay.edges.add(e2);
+                    }
                 }
+                g.graph.ways.add(lastWay);
             }
             lastWay = null;
-            temp = new ArrayList<>();
+            temp = new ArrayDeque<>();
             isRoadForCar = false;
+        } else if (qName.equals("node")) {
+            lastNode = null;
         }
     }
-
 }
