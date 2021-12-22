@@ -154,6 +154,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* Hint1: If you have stored the possible connections for this way, here's your
             chance to actually connect the nodes together if the way is valid. */
 //            System.out.println("Finishing a way...");
+            activeState = "";
             if (isRoadForCar) {
                 while (!temp.isEmpty()) {
                     GraphDB.Node current = temp.poll();
@@ -175,6 +176,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             temp = new ArrayDeque<>();
             isRoadForCar = false;
         } else if (qName.equals("node")) {
+            activeState = "";
             lastNode = null;
         }
     }

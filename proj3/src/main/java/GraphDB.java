@@ -143,7 +143,15 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        double dist = Double.POSITIVE_INFINITY;
+        long minID = 0;
+        for (long id : graph.nodes.keySet()) {
+            if (distance(graph.nodes.get(id).lon, graph.nodes.get(id).lat, lon, lat) < dist) {
+                dist = distance(graph.nodes.get(id).lon, graph.nodes.get(id).lat, lon, lat);
+                minID = id;
+            }
+        }
+        return minID;
     }
 
     /**
