@@ -252,7 +252,7 @@ public class GraphDB {
         }
     }
 
-    public static class distToComparator implements Comparator<Node> {
+    public static class DistToComparator implements Comparator<Node> {
         @Override
         public int compare(Node o1, Node o2) {
             return (int) Math.signum(o1.distTo - o2.distTo);
