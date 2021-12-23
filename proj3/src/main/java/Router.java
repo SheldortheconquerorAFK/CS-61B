@@ -56,6 +56,7 @@ public class Router {
             if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
                 pq.add(g.graph.nodes.get(adj));
             }
+            record.add(adj);
         }
     }
 
