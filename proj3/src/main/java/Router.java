@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +24,39 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        PriorityQueue<GraphDB.Node> pq = new PriorityQueue<>(new GraphDB.DistToComparator());
+        List<Long> path = new ArrayList<>();
+        Set<Long> record = new HashSet<>();
+
+        long st = g.closest(stlon, stlat);
+        long dest = g.closest(destlon, destlat);
+        GraphDB.Node stNode = g.graph.nodes.get(st);
+        GraphDB.Node destNode = g.graph.nodes.get(dest);
+
+        stNode.distTo = 0;
+        stNode.heuristic = g.distance(st, dest);
+        pq.add(stNode);
+        record.add(st);
+        path.add(stNode.id);
+
+        while (!pq.isEmpty()) {
+            GraphDB.Node next = pq.poll();
+            path.add(next.id);
+            relax(pq, g, next, dest, record);
+        }
+        return path;
+    }
+
+    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> record) {
+        for (long adj : next.adj) {
+            if (g.graph.nodes.get(adj).distTo + g.graph.nodes.get(adj).heuristic > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj) + g.distance(adj, dest)) {
+                g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
+            }
+            g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
+            if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
+                pq.add(g.graph.nodes.get(adj));
+            }
+        }
     }
 
     /**

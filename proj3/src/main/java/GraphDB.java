@@ -173,8 +173,8 @@ public class GraphDB {
         double lon;
         double lat;
         long id;
-        long way;
         double distTo; // Encapsulate it into instance variable make it accessible easily
+        double heuristic;
         Map<String, String> extraInfo; // Record attributes
         Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
 
@@ -183,8 +183,8 @@ public class GraphDB {
             this.lon = lon;
             this.lat = lat;
             this.id = id;
-            this.way = 0;
             this.distTo = Double.POSITIVE_INFINITY;
+            this.heuristic = Double.POSITIVE_INFINITY;
             extraInfo = new TreeMap<>();
             adj = new TreeSet<>();
         }
@@ -255,7 +255,7 @@ public class GraphDB {
     public static class DistToComparator implements Comparator<Node> {
         @Override
         public int compare(Node o1, Node o2) {
-            return (int) Math.signum(o1.distTo - o2.distTo);
+            return (int) Math.signum((o1.distTo + o1.heuristic) - (o2.distTo + o2.heuristic));
         }
     }
 
