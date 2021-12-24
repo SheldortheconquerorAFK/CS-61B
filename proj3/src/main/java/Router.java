@@ -25,6 +25,7 @@ public class Router {
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
         PriorityQueue<GraphDB.Node> pq = new PriorityQueue<>(new GraphDB.DistToComparator());
+        Stack<Long> stack = new Stack<>();
         List<Long> path = new ArrayList<>();
         Set<Long> record = new HashSet<>();
 
@@ -35,12 +36,12 @@ public class Router {
 
         stNode.distTo = 0;
         stNode.heuristic = g.distance(st, dest);
+        stNode.nodeIDToThis = 0;
         pq.add(stNode);
         record.add(st);
 
         while (!pq.isEmpty()) {
             GraphDB.Node next = pq.poll();
-            path.add(next.id);
             if (next.id == dest) {
                 break;
             }
@@ -50,6 +51,13 @@ public class Router {
             System.out.println(GraphDB.distance(0.4, 38.6, 0.2, 38.2) + " That's 46 to 22");
             relax(pq, g, next, dest, record);
         }
+        for (long i = dest; g.graph.nodes.get(i).nodeIDToThis != 0; i = g.graph.nodes.get(i).nodeIDToThis) {
+            stack.add(i);
+        }
+        stack.add(st);
+        while (!stack.isEmpty()) {
+            path.add(stack.pop());
+        }
         return path;
     }
 
@@ -58,6 +66,7 @@ public class Router {
             if (g.graph.nodes.get(adj).distTo + g.graph.nodes.get(adj).heuristic > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj) + g.distance(adj, dest)) {
                 g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
                 g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
+                g.graph.nodes.get(adj).nodeIDToThis = next.id;
             }
             if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
                 pq.add(g.graph.nodes.get(adj));

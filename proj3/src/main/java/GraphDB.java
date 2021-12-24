@@ -173,6 +173,7 @@ public class GraphDB {
         double lon;
         double lat;
         long id;
+        long nodeIDToThis;
         double distTo; // Encapsulate it into instance variable make it accessible easily
         double heuristic;
         Map<String, String> extraInfo; // Record attributes
@@ -183,6 +184,7 @@ public class GraphDB {
             this.lon = lon;
             this.lat = lat;
             this.id = id;
+            this.nodeIDToThis = -1;
             this.distTo = Double.POSITIVE_INFINITY;
             this.heuristic = Double.POSITIVE_INFINITY;
             extraInfo = new TreeMap<>();
