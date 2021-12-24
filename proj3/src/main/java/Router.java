@@ -72,7 +72,7 @@ public class Router {
 
     private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> record, Set<Long> nodesInFringe) {
         for (long adj : next.adj) {
-            if (g.graph.nodes.get(adj).distTo + g.graph.nodes.get(adj).heuristic > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj) + g.distance(adj, dest)) {
+            if (g.graph.nodes.get(adj).distTo > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj)) {
                 g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
                 g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
                 g.graph.nodes.get(adj).nodeIDToThis = next.id;
