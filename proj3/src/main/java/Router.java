@@ -37,11 +37,17 @@ public class Router {
         stNode.heuristic = g.distance(st, dest);
         pq.add(stNode);
         record.add(st);
-        path.add(stNode.id);
 
         while (!pq.isEmpty()) {
             GraphDB.Node next = pq.poll();
             path.add(next.id);
+            if (next.id == dest) {
+                break;
+            }
+            System.out.println(GraphDB.distance(0.5, 38.5, 0.6, 38.6) + " That's 55 to 66");
+            System.out.println(GraphDB.distance(0.4, 38.6, 0.6, 38.6) + " That's 46 to 66");
+            System.out.println(GraphDB.distance(0.5, 38.5, 0.2, 38.2) + " That's 55 to 22");
+            System.out.println(GraphDB.distance(0.4, 38.6, 0.2, 38.2) + " That's 46 to 22");
             relax(pq, g, next, dest, record);
         }
         return path;
@@ -51,8 +57,8 @@ public class Router {
         for (long adj : next.adj) {
             if (g.graph.nodes.get(adj).distTo + g.graph.nodes.get(adj).heuristic > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj) + g.distance(adj, dest)) {
                 g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
+                g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
             }
-            g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
             if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
                 pq.add(g.graph.nodes.get(adj));
             }
