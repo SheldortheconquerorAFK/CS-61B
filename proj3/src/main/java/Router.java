@@ -48,6 +48,9 @@ public class Router {
             }
             relax(pq, g, next, dest, record);
         }
+        if (g.graph.nodes.get(dest).nodeIDToThis == -1) {
+            return new ArrayList<>();
+        }
         for (long i = dest; g.graph.nodes.get(i).nodeIDToThis != 0; i = g.graph.nodes.get(i).nodeIDToThis) {
             stack.add(i);
         }
