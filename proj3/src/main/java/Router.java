@@ -42,13 +42,10 @@ public class Router {
 
         while (!pq.isEmpty()) {
             GraphDB.Node next = pq.poll();
+            record.add(next.id);
             if (next.id == dest) {
                 break;
             }
-            System.out.println(GraphDB.distance(0.5, 38.5, 0.6, 38.6) + " That's 55 to 66");
-            System.out.println(GraphDB.distance(0.4, 38.6, 0.6, 38.6) + " That's 46 to 66");
-            System.out.println(GraphDB.distance(0.5, 38.5, 0.2, 38.2) + " That's 55 to 22");
-            System.out.println(GraphDB.distance(0.4, 38.6, 0.2, 38.2) + " That's 46 to 22");
             relax(pq, g, next, dest, record);
         }
         for (long i = dest; g.graph.nodes.get(i).nodeIDToThis != 0; i = g.graph.nodes.get(i).nodeIDToThis) {
@@ -57,6 +54,11 @@ public class Router {
         stack.add(st);
         while (!stack.isEmpty()) {
             path.add(stack.pop());
+        }
+        for (long n : g.graph.nodes.keySet()) {
+            g.graph.nodes.get(n).nodeIDToThis = -1;
+            g.graph.nodes.get(n).heuristic = Double.POSITIVE_INFINITY;
+            g.graph.nodes.get(n).distTo = Double.POSITIVE_INFINITY;
         }
         return path;
     }
@@ -71,7 +73,6 @@ public class Router {
             if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
                 pq.add(g.graph.nodes.get(adj));
             }
-            record.add(adj);
         }
     }
 
