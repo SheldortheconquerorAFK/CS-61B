@@ -198,6 +198,11 @@ public class GraphDB {
             } else {
                 return this.id == ((Node) that).id; }
         }
+
+        @Override
+        public int hashCode() {
+            return (int) (lon * Math.pow(31, 2) + lat * 31 + id);
+        }
     }
 
     public static class Edge {

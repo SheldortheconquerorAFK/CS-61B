@@ -28,6 +28,7 @@ public class Router {
         Stack<Long> stack = new Stack<>();
         List<Long> path = new ArrayList<>();
         Set<Long> record = new HashSet<>();
+        Set<Long> nodesInFringe = new HashSet<>();
 
         long st = g.closest(stlon, stlat);
         long dest = g.closest(destlon, destlat);
@@ -38,15 +39,18 @@ public class Router {
         stNode.heuristic = g.distance(st, dest);
         stNode.nodeIDToThis = 0;
         pq.add(stNode);
-        record.add(st);
+        nodesInFringe.add(st);
 
         while (!pq.isEmpty()) {
             GraphDB.Node next = pq.poll();
-            record.add(next.id);
             if (next.id == dest) {
                 break;
             }
-            relax(pq, g, next, dest, record);
+            if (record.contains(next.id)) {
+                continue;
+            }
+            record.add(next.id);
+            relax(pq, g, next, dest, record, nodesInFringe);
         }
         if (g.graph.nodes.get(dest).nodeIDToThis == -1) {
             return new ArrayList<>();
@@ -58,7 +62,7 @@ public class Router {
         while (!stack.isEmpty()) {
             path.add(stack.pop());
         }
-        for (long n : g.graph.nodes.keySet()) {
+        for (long n : nodesInFringe) {
             g.graph.nodes.get(n).nodeIDToThis = -1;
             g.graph.nodes.get(n).heuristic = Double.POSITIVE_INFINITY;
             g.graph.nodes.get(n).distTo = Double.POSITIVE_INFINITY;
@@ -66,12 +70,13 @@ public class Router {
         return path;
     }
 
-    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> record) {
+    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> record, Set<Long> nodesInFringe) {
         for (long adj : next.adj) {
             if (g.graph.nodes.get(adj).distTo + g.graph.nodes.get(adj).heuristic > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj) + g.distance(adj, dest)) {
                 g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
                 g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
                 g.graph.nodes.get(adj).nodeIDToThis = next.id;
+                nodesInFringe.add(adj);
             }
             if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
                 pq.add(g.graph.nodes.get(adj));
