@@ -27,7 +27,7 @@ public class Router {
         PriorityQueue<GraphDB.Node> pq = new PriorityQueue<>(new GraphDB.DistToComparator());
         Stack<Long> stack = new Stack<>();
         List<Long> path = new ArrayList<>();
-        Set<Long> marked = new HashSet<>();
+        Set<Long> record = new HashSet<>();
         Set<Long> nodesInFringe = new HashSet<>();
 
         long st = g.closest(stlon, stlat);
@@ -46,13 +46,12 @@ public class Router {
             if (next.id == dest) {
                 break;
             }
-            if (marked.contains(next.id)) {
+            if (record.contains(next.id)) {
                 continue;
             }
-            marked.add(next.id);
-            relax(pq, g, next, dest, marked, nodesInFringe);
+            record.add(next.id);
+            relax(pq, g, next, dest, record, nodesInFringe);
         }
-
         if (g.graph.nodes.get(dest).nodeIDToThis == -1) {
             return new ArrayList<>();
         }
