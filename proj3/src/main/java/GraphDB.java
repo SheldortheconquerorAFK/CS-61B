@@ -225,11 +225,6 @@ public class GraphDB {
                 return this.from.equals(((Edge) that).from) && this.to.equals(((Edge) that).to);
             }
         }
-
-        @Override
-        public int hashCode() {
-            return (int) (from.hashCode() * Math.pow(31, 2) + to.hashCode() * 31 + weight);
-        }
     }
 
     public static class Graph {
