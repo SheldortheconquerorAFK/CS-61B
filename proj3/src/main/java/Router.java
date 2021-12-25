@@ -48,10 +48,10 @@ public class Router {
         }
 
 
-        for (long i = dest;
-             g.graph.nodes.get(i).nodeIDToThis != 0 || g.graph.nodes.get(i).nodeIDToThis != -1;
-             i = g.graph.nodes.get(i).nodeIDToThis) {
-            stack.push(i);
+        for (GraphDB.Node current = g.graph.nodes.get(dest);
+             current.id != st;
+             current = g.graph.nodes.get(current.nodeIDToThis)) {
+            stack.push(current.id);
         }
         stack.push(st);
 
