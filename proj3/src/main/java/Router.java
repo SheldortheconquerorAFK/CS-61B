@@ -25,62 +25,58 @@ public class Router {
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
         PriorityQueue<GraphDB.Node> pq = new PriorityQueue<>(new GraphDB.DistToComparator());
+        Set<Long> visited = new HashSet<>();
         Stack<Long> stack = new Stack<>();
-        List<Long> path = new ArrayList<>();
-        Set<Long> marked = new HashSet<>();
-        Set<Long> nodesInFringe = new HashSet<>();
-
+        ArrayList<Long> path = new ArrayList<>();
         long st = g.closest(stlon, stlat);
         long dest = g.closest(destlon, destlat);
         GraphDB.Node stNode = g.graph.nodes.get(st);
-        GraphDB.Node destNode = g.graph.nodes.get(dest);
 
         stNode.distTo = 0;
         stNode.heuristic = g.distance(st, dest);
         stNode.nodeIDToThis = 0;
+
         pq.add(stNode);
-        nodesInFringe.add(st);
+        visited.add(st);
 
         while (!pq.isEmpty()) {
             GraphDB.Node next = pq.poll();
             if (next.id == dest) {
                 break;
             }
-            if (marked.contains(next.id)) {
-                continue;
-            }
-            marked.add(next.id);
-            relax(pq, g, next, dest, marked, nodesInFringe);
+            relax(pq, g, next, dest, visited);
         }
 
-        if (g.graph.nodes.get(dest).nodeIDToThis == -1) {
-            return new ArrayList<>();
+
+        for (long i = dest;
+             g.graph.nodes.get(i).nodeIDToThis != 0 || g.graph.nodes.get(i).nodeIDToThis != -1;
+             i = g.graph.nodes.get(i).nodeIDToThis) {
+            stack.push(i);
         }
-        for (long i = dest; g.graph.nodes.get(i).nodeIDToThis != 0; i = g.graph.nodes.get(i).nodeIDToThis) {
-            stack.add(i);
-        }
-        stack.add(st);
+        stack.push(st);
+
         while (!stack.isEmpty()) {
             path.add(stack.pop());
         }
-        for (long n : nodesInFringe) {
-            g.graph.nodes.get(n).nodeIDToThis = -1;
-            g.graph.nodes.get(n).heuristic = Double.POSITIVE_INFINITY;
-            g.graph.nodes.get(n).distTo = Double.POSITIVE_INFINITY;
+
+        for (long i : visited) {
+            g.graph.nodes.get(i).distTo = Double.POSITIVE_INFINITY;
+            g.graph.nodes.get(i).heuristic = Double.POSITIVE_INFINITY;
+            g.graph.nodes.get(i).nodeIDToThis = -1;
         }
+
         return path;
     }
 
-    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> record, Set<Long> nodesInFringe) {
-        for (long adj : next.adj) {
-            if (g.graph.nodes.get(adj).distTo > g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj)) {
-                g.graph.nodes.get(adj).distTo = g.graph.nodes.get(next.id).distTo + g.distance(next.id, adj);
-                g.graph.nodes.get(adj).heuristic = g.distance(adj, dest);
-                g.graph.nodes.get(adj).nodeIDToThis = next.id;
-                nodesInFringe.add(adj);
-            }
-            if (!pq.contains(g.graph.nodes.get(adj)) && !record.contains(adj)) {
-                pq.add(g.graph.nodes.get(adj));
+    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> visited) {
+        for (long adjID : next.adj) {
+            GraphDB.Node adjNode = g.graph.nodes.get(adjID);
+            if (adjNode.distTo > next.distTo + g.distance(next.id, adjID)) {
+                adjNode.distTo = next.distTo + g.distance(next.id, adjID);
+                adjNode.heuristic = g.distance(adjID, dest);
+                adjNode.nodeIDToThis = next.id;
+                visited.add(adjID);
+                pq.add(adjNode);
             }
         }
     }

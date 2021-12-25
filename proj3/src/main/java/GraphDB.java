@@ -6,7 +6,14 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.TreeSet;
+import java.util.TreeMap;
+import java.util.Comparator;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,7 +27,7 @@ import java.util.*;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
-    public Graph graph;
+    Graph graph;
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -61,7 +68,6 @@ public class GraphDB {
     private void clean() {
         Set<Long> keySet = graph.nodes.keySet();
         keySet.removeIf(id -> graph.nodes.get(id).adj.isEmpty());
-        // TODO: Your code here.
     }
 
     /**
@@ -69,7 +75,6 @@ public class GraphDB {
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
         return graph.nodes.keySet();
     }
 
@@ -173,9 +178,9 @@ public class GraphDB {
         double lon;
         double lat;
         long id;
-        long nodeIDToThis;
         double distTo; // Encapsulate it into instance variable make it accessible easily
         double heuristic;
+        long nodeIDToThis;
         Map<String, String> extraInfo; // Record attributes
         Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
 
@@ -184,9 +189,9 @@ public class GraphDB {
             this.lon = lon;
             this.lat = lat;
             this.id = id;
-            this.nodeIDToThis = -1;
             this.distTo = Double.POSITIVE_INFINITY;
             this.heuristic = Double.POSITIVE_INFINITY;
+            this.nodeIDToThis = -1;
             extraInfo = new TreeMap<>();
             adj = new TreeSet<>();
         }
@@ -201,7 +206,7 @@ public class GraphDB {
 
         @Override
         public int hashCode() {
-            return (int) (lon * Math.pow(31, 2) + lat * 31 + id);
+            return Objects.hash(lon, lat, id);
         }
     }
 
@@ -224,6 +229,11 @@ public class GraphDB {
             } else {
                 return this.from.equals(((Edge) that).from) && this.to.equals(((Edge) that).to);
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(from, to, weight);
         }
     }
 
