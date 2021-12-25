@@ -52,15 +52,16 @@ public class Rasterer {
         results.put("depth", 0);
         results.put("query_success", false);  // Initialize all required fields in results
 
-        if (params.get("ullat") <= MapServer.ROOT_LRLAT ||
-                params.get("ullon") >= MapServer.ROOT_LRLON ||
-                params.get("lrlat") >= MapServer.ROOT_ULLAT ||
-                params.get("lrlon") <= MapServer.ROOT_ULLON) {
+        if (params.get("ullat") <= MapServer.ROOT_LRLAT
+                || params.get("ullon") >= MapServer.ROOT_LRLON
+                || params.get("lrlat") >= MapServer.ROOT_ULLAT
+                || params.get("lrlon") <= MapServer.ROOT_ULLON) {
             System.out.println(
-                    "Coordinates provided by request completely go off the bound of the entire map.");
+                    "Coordinates go off the bound of the entire map.");
             return results;
         }
-        if (params.get("ullat") <= params.get("lrlat") || params.get("ullon") >= params.get("lrlon")) {
+        if (params.get("ullat") <= params.get("lrlat")
+                || params.get("ullon") >= params.get("lrlon")) {
             System.out.println(
                     "Coordinates provided by request have wrong inequality.");
             return results;

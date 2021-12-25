@@ -201,7 +201,8 @@ public class GraphDB {
             if (this.getClass() != that.getClass()) {
                 return false;
             } else {
-                return this.id == ((Node) that).id; }
+                return this.id == ((Node) that).id;
+            }
         }
 
         @Override

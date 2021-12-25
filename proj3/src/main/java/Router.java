@@ -1,4 +1,10 @@
-import java.util.*;
+import java.util.Objects;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Stack;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +74,11 @@ public class Router {
         return path;
     }
 
-    private static void relax(PriorityQueue<GraphDB.Node> pq, GraphDB g, GraphDB.Node next, long dest, Set<Long> visited) {
+    private static void relax(PriorityQueue<GraphDB.Node> pq,
+                              GraphDB g,
+                              GraphDB.Node next,
+                              long dest,
+                              Set<Long> visited) {
         for (long adjID : next.adj) {
             GraphDB.Node adjNode = g.graph.nodes.get(adjID);
             if (adjNode.distTo > next.distTo + g.distance(next.id, adjID)) {
