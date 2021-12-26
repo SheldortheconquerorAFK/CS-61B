@@ -7,12 +7,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.util.Objects;
-import java.util.Set;
-import java.util.Map;
 import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
 import java.util.Comparator;
+
 
 
 /**
@@ -181,8 +181,8 @@ public class GraphDB {
         double distTo; // Encapsulate it into instance variable make it accessible easily
         double heuristic;
         long nodeTo;
-        Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
         String name;
+        Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
         String way;
 
 
@@ -193,7 +193,9 @@ public class GraphDB {
             this.distTo = Double.POSITIVE_INFINITY;
             this.heuristic = Double.POSITIVE_INFINITY;
             this.nodeTo = -1;
-            adj = new TreeSet<>();
+            this.name = null;
+            this.adj = new HashSet<>();
+            this.way = "";
         }
 
         @Override
@@ -244,29 +246,9 @@ public class GraphDB {
         Set<Way> ways;
 
         public Graph() {
-            nodes = new TreeMap<>();
+            nodes = new HashMap<>();
             edges = new HashSet<>(); // No need for sorting these edges so pick a hashset
             ways = new HashSet<>();
-        }
-
-        public int V() {
-            return nodes.size();
-        }
-
-        public void removeNode(Node n) {
-            for (Long id : n.adj) {
-                nodes.get(id).adj.remove(n.id);
-            }
-            nodes.remove(n.id);
-            edges.removeIf(e -> e.from.id == n.id || e.to.id == n.id);
-        }
-
-        public void removeNode(long id) {
-            for (Long i : nodes.get(id).adj) {
-                nodes.get(i).adj.remove(id);
-            }
-            nodes.remove(id);
-            edges.removeIf(e -> e.from.id == id || e.to.id == id);
         }
     }
 
@@ -285,7 +267,7 @@ public class GraphDB {
         String name;
 
         public Way() {
-            nodes = new TreeMap<>();
+            nodes = new HashMap<>();
             edges = new HashSet<>();
             id = 0;
             maxSpeed = null;

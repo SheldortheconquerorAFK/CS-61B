@@ -106,13 +106,13 @@ public class Router {
         GraphDB.Node currNode = null;
         GraphDB.Node prevNode = g.graph.nodes.get(prev);
         NavigationDirection startND = new NavigationDirection();
-        NavigationDirection currND = startND;
         try {
             startND.direction = NavigationDirection.START;
-            startND.way = g.graph.nodes.get(route.get(0)).way;
+            startND.way = prevNode.way;
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
+        NavigationDirection currND = startND;
 
         double dist = 0;
 
@@ -124,8 +124,8 @@ public class Router {
                 list.add(currND);
                 dist = 0;
                 currND = new NavigationDirection();
-                currND.way = currNode.way;
                 currND.direction = bearingIndex(g, prev, curr);
+                currND.way = currNode.way;
             } else {
                 dist += g.distance(prev, curr);
             }
@@ -136,13 +136,21 @@ public class Router {
     }
 
     private static int bearingIndex(GraphDB g, long v, long w) {
-        if (g.bearing(v, w) >= -15 && g.bearing(v, w) <= 15) return NavigationDirection.STRAIGHT;
-        else if (g.bearing(v, w) >= -30) return NavigationDirection.SLIGHT_LEFT;
-        else if (g.bearing(v, w) <= 30) return NavigationDirection.SLIGHT_RIGHT;
-        else if (g.bearing(v, w) <= 100) return NavigationDirection.RIGHT;
-        else if (g.bearing(v, w) >= -100) return NavigationDirection.LEFT;
-        else if (g.bearing(v, w) < -100) return NavigationDirection.SHARP_LEFT;
-        else return NavigationDirection.SLIGHT_RIGHT;
+        if (g.bearing(v, w) >= -15 && g.bearing(v, w) <= 15) {
+            return NavigationDirection.STRAIGHT;
+        } else if (g.bearing(v, w) >= -30) {
+            return NavigationDirection.SLIGHT_LEFT;
+        } else if (g.bearing(v, w) <= 30) {
+            return NavigationDirection.SLIGHT_RIGHT;
+        } else if (g.bearing(v, w) <= 100) {
+            return NavigationDirection.RIGHT;
+        } else if (g.bearing(v, w) >= -100) {
+            return NavigationDirection.LEFT;
+        } else if (g.bearing(v, w) < -100) {
+            return NavigationDirection.SHARP_LEFT;
+        } else {
+            return NavigationDirection.SHARP_RIGHT;
+        }
     }
 
     /**
