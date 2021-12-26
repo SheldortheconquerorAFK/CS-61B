@@ -180,9 +180,10 @@ public class GraphDB {
         long id;
         double distTo; // Encapsulate it into instance variable make it accessible easily
         double heuristic;
-        long nodeIDToThis;
-        Map<String, String> extraInfo; // Record attributes
+        long nodeTo;
         Set<Long> adj; // Adjacent nodes cannot be duplicate so we use set
+        String name;
+        String way;
 
 
         public Node(double lon, double lat, long id) {
@@ -191,8 +192,7 @@ public class GraphDB {
             this.id = id;
             this.distTo = Double.POSITIVE_INFINITY;
             this.heuristic = Double.POSITIVE_INFINITY;
-            this.nodeIDToThis = -1;
-            extraInfo = new TreeMap<>();
+            this.nodeTo = -1;
             adj = new TreeSet<>();
         }
 
@@ -281,13 +281,15 @@ public class GraphDB {
         Map<Long, Node> nodes;
         Set<Edge> edges;
         long id;
-        Map<String, String> extraInfo;
+        String maxSpeed;
+        String name;
 
         public Way() {
             nodes = new TreeMap<>();
             edges = new HashSet<>();
             id = 0;
-            extraInfo = new TreeMap<>();
+            maxSpeed = null;
+            name = null;
         }
     }
 }

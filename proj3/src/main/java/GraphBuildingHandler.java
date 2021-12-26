@@ -99,6 +99,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
             GraphDB.Node currentNode = g.graph.nodes.get(
                     Long.parseLong(attributes.getValue("ref")));
+            currentNode.way = attributes.getValue("name");
             temp.offer(currentNode);
             /* Hint1: It would be useful to remember what was the last node in this way. */
             /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
@@ -112,7 +113,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
                 //System.out.println("Max Speed: " + v);
-                lastWay.extraInfo.put(k, v);
+                lastWay.maxSpeed = v;
             } else if (k.equals("highway")) {
                 //System.out.println("Highway type: " + v);
                 if (ALLOWED_HIGHWAY_TYPES.contains(v)) {
@@ -121,13 +122,16 @@ public class GraphBuildingHandler extends DefaultHandler {
                 /* Hint: Setting a "flag" is good enough! */
             } else if (k.equals("name")) {
                 //System.out.println("Way Name: " + v);
-                lastWay.extraInfo.put(k, v);
+                lastWay.name = v;
+                for (GraphDB.Node n : temp) {
+                    n.way = v;
+                }
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
-            g.graph.nodes.get(lastNode).extraInfo.put("name", attributes.getValue("name"));
+            g.graph.nodes.get(lastNode).name = attributes.getValue("name");
             /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */

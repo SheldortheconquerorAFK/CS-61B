@@ -40,7 +40,7 @@ public class Router {
 
         stNode.distTo = 0;
         stNode.heuristic = g.distance(st, dest);
-        stNode.nodeIDToThis = 0;
+        stNode.nodeTo = 0;
 
         pq.add(stNode);
         visited.add(st);
@@ -56,7 +56,7 @@ public class Router {
 
         for (GraphDB.Node current = g.graph.nodes.get(dest);
              current.id != st;
-             current = g.graph.nodes.get(current.nodeIDToThis)) {
+             current = g.graph.nodes.get(current.nodeTo)) {
             stack.push(current.id);
         }
         stack.push(st);
@@ -68,7 +68,7 @@ public class Router {
         for (long i : visited) {
             g.graph.nodes.get(i).distTo = Double.POSITIVE_INFINITY;
             g.graph.nodes.get(i).heuristic = Double.POSITIVE_INFINITY;
-            g.graph.nodes.get(i).nodeIDToThis = -1;
+            g.graph.nodes.get(i).nodeTo = -1;
         }
 
         return path;
@@ -84,7 +84,7 @@ public class Router {
             if (adjNode.distTo > next.distTo + g.distance(next.id, adjID)) {
                 adjNode.distTo = next.distTo + g.distance(next.id, adjID);
                 adjNode.heuristic = g.distance(adjID, dest);
-                adjNode.nodeIDToThis = next.id;
+                adjNode.nodeTo = next.id;
                 visited.add(adjID);
                 pq.add(adjNode);
             }
@@ -100,9 +100,50 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        ArrayList<NavigationDirection> list = new ArrayList<>();
+        long curr = 0;
+        long prev = route.remove(0);
+        GraphDB.Node currNode = null;
+        GraphDB.Node prevNode = g.graph.nodes.get(prev);
+        NavigationDirection startND = new NavigationDirection();
+        NavigationDirection currND = startND;
+        try {
+            startND.direction = NavigationDirection.START;
+            startND.way = g.graph.nodes.get(route.get(0)).way;
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        double dist = 0;
+
+        while (!route.isEmpty()) {
+            curr = route.remove(0);
+            currNode = g.graph.nodes.get(curr);
+            if (!prevNode.way.equals(currNode.way)) {
+                currND.distance = dist + g.distance(prev, curr);
+                list.add(currND);
+                dist = 0;
+                currND = new NavigationDirection();
+                currND.way = currNode.way;
+                currND.direction = bearingIndex(g, prev, curr);
+            } else {
+                dist += g.distance(prev, curr);
+            }
+            prev = curr;
+            prevNode = currNode;
+        }
+        return list;
     }
 
+    private static int bearingIndex(GraphDB g, long v, long w) {
+        if (g.bearing(v, w) >= -15 && g.bearing(v, w) <= 15) return NavigationDirection.STRAIGHT;
+        else if (g.bearing(v, w) >= -30) return NavigationDirection.SLIGHT_LEFT;
+        else if (g.bearing(v, w) <= 30) return NavigationDirection.SLIGHT_RIGHT;
+        else if (g.bearing(v, w) <= 100) return NavigationDirection.RIGHT;
+        else if (g.bearing(v, w) >= -100) return NavigationDirection.LEFT;
+        else if (g.bearing(v, w) < -100) return NavigationDirection.SHARP_LEFT;
+        else return NavigationDirection.SLIGHT_RIGHT;
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:
