@@ -16,8 +16,50 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
-        return null;
+        String[] sorted = new String[asciis.length];
+        String[] copy = new String[asciis.length];
+        System.arraycopy(asciis, 0, copy, 0, asciis.length);
+        int maxLen = Integer.MIN_VALUE;
+        for (String s : copy) {
+            if (s.length() > maxLen) {
+                maxLen = s.length();
+            }
+        }
+        for (int i = maxLen - 1; i >= 0; i--) {
+            int max = Integer.MIN_VALUE;
+            for (String s : copy) {
+                if (s.length() - (maxLen - 1 - i) <= i) {
+                    continue;
+                }
+                max = Math.max(max, s.charAt(i));
+            }
+            int[] count = new int[max + 3]; // from 0 to max (index range) we need max + 1 positions, plus ONE for MIN_VALUE, plus ONE again for moving indexes one position forward
+            for (String s : copy) {
+                if (s.length() - (maxLen - 1 - i) <= i) {
+                    count[max + 2]++; // put NUMBER 0 to max to INDEXES from 1 to max + 1, INDEX max + 2 we put MIN_VALUE
+                } else {
+                    count[s.charAt(i) + 1]++;
+                }
+            }
+            count[0] += count[max + 2];
+            for (i = 1; i < count.length - 1; i++) {
+                count[i] += count[i - 1];
+            }
+
+            for (int j = 0; j < copy.length; j++) {
+                if (copy[j].length() - (maxLen - 1 - i) <= i) {
+                    int place = count[max + 2];
+                    sorted[place] = copy[j];
+                    count[max + 2]++;
+                } else {
+                    int place = count[copy[j].charAt(i)];
+                    sorted[place] = copy[j];
+                    count[place]++;
+                }
+            }
+            copy = sorted;
+        }
+        return sorted;
     }
 
     /**
@@ -28,7 +70,6 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        return;
     }
 
     /**
