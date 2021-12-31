@@ -16,8 +16,17 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
+        String[] sorted = new String[asciis.length];
+        String[] copy = new String[asciis.length];
+        System.arraycopy(asciis, 0, copy, 0, asciis.length);
+        int maxLen = Integer.MIN_VALUE;
+        for (String s : copy) {
+            if (s.length() > maxLen) {
+                maxLen = s.length();
+            }
+        }
         return null;
+
     }
 
     /**
@@ -28,7 +37,26 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        return;
+        int max = Integer.MIN_VALUE;
+        for (String s : asciis) {
+            max = Math.max(max, s.charAt(index));
+        }
+
+        // gather all the counts for each value
+        int[] counts = new int[max + 1];
+        for (String s : asciis) {
+            counts[s.length()]++;
+        }
+
+        // when we're dealing with ints, we can just put each value
+        // count number of times into the new array
+        int[] sorted = new int[asciis.length];
+        int k = 0;
+        for (int i = 0; i < counts.length; i += 1) {
+            for (int j = 0; j < counts[i]; j += 1, k += 1) {
+                sorted[k] = i;
+            }
+        }
     }
 
     /**
