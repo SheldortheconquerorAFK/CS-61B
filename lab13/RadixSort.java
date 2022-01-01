@@ -32,7 +32,7 @@ public class RadixSort {
         for (int i = maxLen - 1; i >= 0; i--) {
             int[] count = new int[R + 2]; // from 0 to R - 1 (index range) we need R positions, plus ONE for MIN_VALUE, plus ONE again for moving indexes one position forward
             for (String s : copy) {
-                if (s.length() - (maxLen - 1 - i) <= i) {
+                if (s.length() <= i) {
                     count[R + 1]++; // put NUMBER 0 to R - 1 to INDEXES from 1 to R, INDEX R + 1 we put MIN_VALUE
                 } else {
                     count[s.charAt(i) + 1]++;
@@ -45,13 +45,13 @@ public class RadixSort {
             }
 
             for (String s : copy) {
-                if (s.length() - (maxLen - 1 - i) <= i) {
+                if (s.length() <= i) {
                     sorted[count[R + 1]++] = s;
                 } else {
                     sorted[count[s.charAt(i)]++] = s;
                 }
             }
-            copy = sorted;
+            System.arraycopy(sorted, 0, copy, 0, sorted.length);
         }
         return copy;
     }
