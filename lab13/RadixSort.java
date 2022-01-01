@@ -44,11 +44,11 @@ public class RadixSort {
                 count[j] += count[j - 1];
             }
 
-            for (int k = 0; k < copy.length; k++) {
-                if (copy[k].length() - (maxLen - 1 - i) <= i) {
-                    sorted[count[R + 1]++] = copy[k];
+            for (String s : copy) {
+                if (s.length() - (maxLen - 1 - i) <= i) {
+                    sorted[count[R + 1]++] = s;
                 } else {
-                    sorted[count[copy[k].charAt(i)]++] = copy[k];
+                    sorted[count[s.charAt(i)]++] = s;
                 }
             }
             copy = sorted;
@@ -83,7 +83,7 @@ public class RadixSort {
 
     public static void main(String[] args) {
         String[] test = new String[5];
-        test[0] = "a";
+        test[0] = "c";
         test[1] = "b";
         test[2] = "ab";
         test[3] = "9";
