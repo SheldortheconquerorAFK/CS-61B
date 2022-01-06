@@ -70,9 +70,8 @@ public class SeamCarver {
 
     public double energy(int x, int y) {
         if (isOriginReset) {
-            int newX = p.height() - 1 - x;
-            int newY = y;
-            return energyMatrix[newY][newX];
+            int oldY = p.height() - 1 - x;
+            return energyMatrix[oldY][y];
         } else {
             return energyMatrix[y][x];
         }
@@ -117,32 +116,60 @@ public class SeamCarver {
         validateRowIndex(y);
 
         int[] path = new int[height() - y];
-        path[0] = x;
+        if (isOriginReset) {
+            path[0] = p.height() - 1 - x;
+        } else {
+            path[0] = x;
+        }
         int lastX = x;
         for (int row = 1; row < height() - y; row++) {
             if (lastX == 0) {
                 if (energy(lastX, y + row) <= energy(lastX + 1, y + row)) {
-                    path[row] = lastX;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX;
+                    } else {
+                        path[row] = lastX;
+                    }
                 } else {
-                    path[row] = lastX + 1;
-                    lastX++;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX - 1;
+                    } else {
+                        path[row] = lastX + 1;
+                    }
+                    lastX += 1;
                 }
             } else if (lastX == width() - 1) {
                 if (energy(lastX, y + row) <= energy(lastX - 1, y + row)) {
                     path[row] = lastX;
                 } else {
-                    path[row] = lastX - 1;
-                    lastX--;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX + 1;
+                    } else {
+                        path[row] = lastX - 1;
+                    }
+                    lastX -= 1;
                 }
             } else {
                 if (StdStats.min(new double[]{energy(lastX - 1, y + row), energy(lastX, y + row), energy(lastX + 1, y + row)}) == energy(lastX - 1, y + row)) {
-                    path[row] = lastX - 1;
-                    lastX--;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX + 1;
+                    } else {
+                        path[row] = lastX - 1;
+                    }
+                    lastX -= 1;
                 } else if (StdStats.min(new double[]{energy(lastX - 1, y + row), energy(lastX, y + row), energy(lastX + 1, y + row)}) == energy(lastX, y + row)) {
-                    path[row] = lastX;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX;
+                    } else {
+                        path[row] = lastX;
+                    }
                 } else {
-                    path[row] = lastX + 1;
-                    lastX++;
+                    if (isOriginReset) {
+                        path[row] = p.height() - 1 - lastX - 1;
+                    } else {
+                        path[row] = lastX + 1;
+                    }
+                    lastX += 1;
                 }
             }
         }
