@@ -71,109 +71,64 @@ public class SeamCarver {
     public double energy(int x, int y) {
         if (isOriginReset) {
             int oldY = p.height() - 1 - x;
-            return energyMatrix[oldY][y];
+            int oldX = y;
+            return energyMatrix[oldY][oldX];
         } else {
             return energyMatrix[y][x];
         }
     }
 
     public int[] findHorizontalSeam() {
-        p.setOriginLowerLeft();
-        isOriginReset = true;
-        int[] hs = findVerticalSeam();
-        p.setOriginUpperLeft();
-        isOriginReset = false;
-        return hs;
+        return null;
     }
 
     public int[] findVerticalSeam() {
-        double[] seamEnergy = new double[width()];
-        for (int x = 0; x < width(); x++) {
-            int[] pathForX = findVerticalPath(x, 0);
-            double[] energyArrayForOnePath = new double[height()];
-            for (int y = 0; y < height(); y++) {
-                energyArrayForOnePath[y] = energy(pathForX[y], y);
+        double[][] pathEnergyRecord = new double[height()][width()];
+        int[][] nextRowPixelFrom = new int[height()][width()];
+        for (int row = 0; row < height(); row++) {
+            for (int col = 0; col < width(); col++) {
+                if (row == 0) {
+                    pathEnergyRecord[row][col] = energy(col, row);
+                    nextRowPixelFrom[row][col] = col;
+                } else {
+                    if (col == 0) {
+                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
+                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]) {
+                            nextRowPixelFrom[row][col] = col;
+                        } else {
+                            nextRowPixelFrom[row][col] = col + 1;
+                        }
+                    } else if (col == width() - 1) {
+                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]});
+                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]}) == pathEnergyRecord[row - 1][col]) {
+                            nextRowPixelFrom[row][col] = col - 1;
+                        } else {
+                            nextRowPixelFrom[row][col] = col;
+                        }
+                    } else {
+                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
+                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]) {
+                            nextRowPixelFrom[row][col] = col - 1;
+                        } else if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row][col]){
+                            nextRowPixelFrom[row][col] = col;
+                        } else {
+                            nextRowPixelFrom[row][col] = col + 1;
+                        }
+                    }
+                }
             }
-            double totalEnergy = 0;
-            for (double d : energyArrayForOnePath) {
-                totalEnergy += d;
-            }
-            seamEnergy[x] = totalEnergy;
         }
-        double minPathEnergy = Double.MAX_VALUE;
-        int minX = 0;
+        double minPathEnergy = StdStats.min(pathEnergyRecord[height() - 1]);
+        int[] seam = new int[height()];
         for (int i = 0; i < width(); i++) {
-            if (seamEnergy[i] < minPathEnergy) {
-                minPathEnergy = seamEnergy[i];
-                minX = i;
-            }
-        }
-        return findVerticalPath(minX, 0);
-    }
-
-    private int[] findVerticalPath(int x, int y) {
-        validateColumnIndex(x);
-        validateRowIndex(y);
-
-        int[] path = new int[height() - y];
-        if (isOriginReset) {
-            path[0] = p.height() - 1 - x;
-        } else {
-            path[0] = x;
-        }
-        int lastX = x;
-        for (int row = 1; row < height() - y; row++) {
-            if (lastX == 0) {
-                if (energy(lastX, y + row) <= energy(lastX + 1, y + row)) {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX;
-                    } else {
-                        path[row] = lastX;
-                    }
-                } else {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX - 1;
-                    } else {
-                        path[row] = lastX + 1;
-                    }
-                    lastX += 1;
-                }
-            } else if (lastX == width() - 1) {
-                if (energy(lastX, y + row) <= energy(lastX - 1, y + row)) {
-                    path[row] = lastX;
-                } else {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX + 1;
-                    } else {
-                        path[row] = lastX - 1;
-                    }
-                    lastX -= 1;
-                }
-            } else {
-                if (StdStats.min(new double[]{energy(lastX - 1, y + row), energy(lastX, y + row), energy(lastX + 1, y + row)}) == energy(lastX - 1, y + row)) {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX + 1;
-                    } else {
-                        path[row] = lastX - 1;
-                    }
-                    lastX -= 1;
-                } else if (StdStats.min(new double[]{energy(lastX - 1, y + row), energy(lastX, y + row), energy(lastX + 1, y + row)}) == energy(lastX, y + row)) {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX;
-                    } else {
-                        path[row] = lastX;
-                    }
-                } else {
-                    if (isOriginReset) {
-                        path[row] = p.height() - 1 - lastX - 1;
-                    } else {
-                        path[row] = lastX + 1;
-                    }
-                    lastX += 1;
+            if (pathEnergyRecord[height() - 1][i] == minPathEnergy) {
+                seam[height() - 1] = i;
+                for (int j = height() - 1; j > 0; j--) {
+                    seam[j - 1] = nextRowPixelFrom[j][seam[j]];
                 }
             }
         }
-        return path;
+        return seam;
     }
 
     public void removeHorizontalSeam(int[] seam) {
