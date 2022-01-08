@@ -4,9 +4,9 @@ import edu.princeton.cs.introcs.StdStats;
 import java.awt.Color;
 
 public class SeamCarver {
-    Picture p;
-    double[][] energyMatrix;
-    boolean isOriginReset;
+    private Picture p;
+    private double[][] energyMatrix;
+    private boolean isOriginReset;
 
     public SeamCarver(Picture picture) {
         p = picture;
@@ -92,35 +92,37 @@ public class SeamCarver {
 
     public int[] findVerticalSeam() {
         double[][] pathEnergyRecord = new double[height()][width()];
-        int[][] PixelPointedFrom = new int[height()][width()];
+        int[][] pixelPointedFrom = new int[height()][width()];
         for (int row = 0; row < height(); row++) {
             for (int col = 0; col < width(); col++) {
                 if (row == 0) {
                     pathEnergyRecord[row][col] = energy(col, row);
-                    PixelPointedFrom[row][col] = col;
+                    pixelPointedFrom[row][col] = col;
                 } else {
-                    if (col == 0) {
-                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
-                        if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col + 1]) {
-                            PixelPointedFrom[row][col] = col;
+                    if (width() != 1) {
+                        if (col == 0) {
+                            pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
+                            if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col + 1]) {
+                                pixelPointedFrom[row][col] = col;
+                            } else {
+                                pixelPointedFrom[row][col] = col + 1;
+                            }
+                        } else if (col == width() - 1) {
+                            pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]});
+                            if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col - 1]) {
+                                pixelPointedFrom[row][col] = col;
+                            } else {
+                                pixelPointedFrom[row][col] = col - 1;
+                            }
                         } else {
-                            PixelPointedFrom[row][col] = col + 1;
-                        }
-                    } else if (col == width() - 1) {
-                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]});
-                        if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col - 1]) {
-                            PixelPointedFrom[row][col] = col;
-                        } else {
-                            PixelPointedFrom[row][col] = col - 1;
-                        }
-                    } else {
-                        pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
-                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col - 1]) {
-                            PixelPointedFrom[row][col] = col - 1;
-                        } else if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]){
-                            PixelPointedFrom[row][col] = col;
-                        } else {
-                            PixelPointedFrom[row][col] = col + 1;
+                            pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
+                            if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col - 1]) {
+                                pixelPointedFrom[row][col] = col - 1;
+                            } else if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]) {
+                                pixelPointedFrom[row][col] = col;
+                            } else {
+                                pixelPointedFrom[row][col] = col + 1;
+                            }
                         }
                     }
                 }
@@ -135,7 +137,7 @@ public class SeamCarver {
                     break;
                 }
                 for (int j = height() - 1; j > 0; j--) {
-                    seam[j - 1] = PixelPointedFrom[j][seam[j]];
+                    seam[j - 1] = pixelPointedFrom[j][seam[j]];
                 }
             }
         }
