@@ -49,7 +49,7 @@ public class SeamCarver {
     }
 
     public Picture picture() {
-        return p;
+        return new Picture(p);
     }
 
     public int width() {
@@ -79,40 +79,48 @@ public class SeamCarver {
     }
 
     public int[] findHorizontalSeam() {
-        return null;
+        p.setOriginLowerLeft();
+        isOriginReset = true;
+        int[] hs = findVerticalSeam();
+        p.setOriginUpperLeft();
+        isOriginReset = false;
+        for (int i = 0; i < hs.length; i++) {
+            hs[i] = p.height() - 1 - hs[i];
+        }
+        return hs;
     }
 
     public int[] findVerticalSeam() {
         double[][] pathEnergyRecord = new double[height()][width()];
-        int[][] nextRowPixelFrom = new int[height()][width()];
+        int[][] PixelPointedFrom = new int[height()][width()];
         for (int row = 0; row < height(); row++) {
             for (int col = 0; col < width(); col++) {
                 if (row == 0) {
                     pathEnergyRecord[row][col] = energy(col, row);
-                    nextRowPixelFrom[row][col] = col;
+                    PixelPointedFrom[row][col] = col;
                 } else {
                     if (col == 0) {
                         pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
-                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]) {
-                            nextRowPixelFrom[row][col] = col;
+                        if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col + 1]) {
+                            PixelPointedFrom[row][col] = col;
                         } else {
-                            nextRowPixelFrom[row][col] = col + 1;
+                            PixelPointedFrom[row][col] = col + 1;
                         }
                     } else if (col == width() - 1) {
                         pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]});
-                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col]}) == pathEnergyRecord[row - 1][col]) {
-                            nextRowPixelFrom[row][col] = col - 1;
+                        if (pathEnergyRecord[row - 1][col] <= pathEnergyRecord[row - 1][col - 1]) {
+                            PixelPointedFrom[row][col] = col;
                         } else {
-                            nextRowPixelFrom[row][col] = col;
+                            PixelPointedFrom[row][col] = col - 1;
                         }
                     } else {
                         pathEnergyRecord[row][col] = energy(col, row) + StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]});
-                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]) {
-                            nextRowPixelFrom[row][col] = col - 1;
-                        } else if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row][col]){
-                            nextRowPixelFrom[row][col] = col;
+                        if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col - 1]) {
+                            PixelPointedFrom[row][col] = col - 1;
+                        } else if (StdStats.min(new double[]{pathEnergyRecord[row - 1][col - 1], pathEnergyRecord[row - 1][col], pathEnergyRecord[row - 1][col + 1]}) == pathEnergyRecord[row - 1][col]){
+                            PixelPointedFrom[row][col] = col;
                         } else {
-                            nextRowPixelFrom[row][col] = col + 1;
+                            PixelPointedFrom[row][col] = col + 1;
                         }
                     }
                 }
@@ -123,8 +131,11 @@ public class SeamCarver {
         for (int i = 0; i < width(); i++) {
             if (pathEnergyRecord[height() - 1][i] == minPathEnergy) {
                 seam[height() - 1] = i;
+                if (height() == 1) {
+                    break;
+                }
                 for (int j = height() - 1; j > 0; j--) {
-                    seam[j - 1] = nextRowPixelFrom[j][seam[j]];
+                    seam[j - 1] = PixelPointedFrom[j][seam[j]];
                 }
             }
         }
