@@ -8,7 +8,7 @@ import java.util.Map;
 public class BinaryTrie implements Serializable {
     Node root;
     @Serial
-    private static final long serialVersionUID = 123L;
+    private static final long serialVersionUID = 1L;
 
     public BinaryTrie(Map<Character, Integer> frequencyTable) {
         MinPQ<Node> pq = new MinPQ<>();
@@ -32,20 +32,16 @@ public class BinaryTrie implements Serializable {
         }
         Node n = root;
         int length = 0;
-        Match m = null;
-        for (int i = 0; i <= querySequence.length(); i++) {
-            if (querySequence.bitAt(i) == 0 && n.ch == '\0') {
+        while (!n.isLeaf()) {
+            if (querySequence.bitAt(length) == 0 && n.ch == '\0') {
                 n = n.left;
                 length++;
-            } else if (querySequence.bitAt(i) == 1 && n.ch == '\0') {
+            } else if (querySequence.bitAt(length) == 1 && n.ch == '\0') {
                 n = n.right;
                 length++;
-            } else if (n.ch != '\0') {
-                m = new Match(querySequence.firstNBits(length), n.ch);
-                break;
             }
         }
-        return m;
+        return new Match(querySequence.firstNBits(length), n.ch);
     }
 
     public Map<Character, BitSequence> buildLookupTable() {
@@ -56,19 +52,21 @@ public class BinaryTrie implements Serializable {
 
     private void buildLookupTable(Map<Character, BitSequence> map, Node n, String s) {
         if (!n.isLeaf()) {
-            buildLookupTable(map, n.left, s + "0");
-            buildLookupTable(map, n.right,s + "1");
+            buildLookupTable(map, n.left, s + '0');
+            buildLookupTable(map, n.right,s + '1');
         } else {
             BitSequence bs = new BitSequence(s);
             map.put(n.ch, bs);
         }
     }
 
-    private static class Node implements Comparable<Node> {
+    private static class Node implements Comparable<Node>, Serializable {
         private char ch;
         private int freq;
         private Node left;
         private Node right;
+        @Serial
+        private static final long serialVersionUID = 2L;
 
         private Node(char c, int f, Node l, Node r) {
             ch = c;
