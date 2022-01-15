@@ -1,9 +1,7 @@
-import java.util.ArrayList;
-
 public class HuffmanDecoder {
     public  static void main(String[] args) {
         if (args.length < 2) {
-            throw new RuntimeException("Compressed file name or name for decompressed file not found.");
+            throw new RuntimeException();
         }
         ObjectReader or = new ObjectReader(args[0]);
 

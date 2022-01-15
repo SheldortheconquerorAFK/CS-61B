@@ -53,7 +53,7 @@ public class BinaryTrie implements Serializable {
     private void buildLookupTable(Map<Character, BitSequence> map, Node n, String s) {
         if (!n.isLeaf()) {
             buildLookupTable(map, n.left, s + '0');
-            buildLookupTable(map, n.right,s + '1');
+            buildLookupTable(map, n.right, s + '1');
         } else {
             BitSequence bs = new BitSequence(s);
             map.put(n.ch, bs);
