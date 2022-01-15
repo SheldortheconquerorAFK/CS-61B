@@ -1,13 +1,11 @@
 import edu.princeton.cs.algs4.MinPQ;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BinaryTrie implements Serializable {
     Node root;
-    @Serial
     private static final long serialVersionUID = 1L;
 
     public BinaryTrie(Map<Character, Integer> frequencyTable) {
@@ -65,7 +63,6 @@ public class BinaryTrie implements Serializable {
         private int freq;
         private Node left;
         private Node right;
-        @Serial
         private static final long serialVersionUID = 2L;
 
         private Node(char c, int f, Node l, Node r) {
